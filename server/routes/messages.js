@@ -13,7 +13,7 @@ router.get('/:username_origin/users/:username_destiny', async (req, res) => {
     const { username_origin, username_destiny } = req.params;
 
     try {
-        // Check if both username_origin and username_destiny exist in the Users collection
+        // revisar si los dos usuarios existen
         const originUser = await User.findOne({ username: username_origin });
         const destinyUser = await User.findOne({ username: username_destiny });
 
@@ -21,13 +21,12 @@ router.get('/:username_origin/users/:username_destiny', async (req, res) => {
             return res.status(400).json({ error: 'One or both usernames do not exist' });
         }
 
-        // Both usernames exist, retrieve all messages between them
         const messages = await Message.find({
             $or: [
                 { username_origin, username_destiny },
                 { username_origin: username_destiny, username_destiny: username_origin }
             ]
-        }).sort({ createdAt: 'asc' }); // Adjust sorting as per your requirement
+        }).sort({ createdAt: 'asc' }); 
 
         res.status(200).json(messages);
     } catch (error) {
@@ -51,7 +50,7 @@ router.post('/:username_destiny', async (req, res) => {
         console.log('originUser:', originUser, 'destiny', destinyUser)
 
         if (!originUser || !destinyUser) {
-            return res.status(400).json({ error: 'One or both usernames do not exist' });
+            return res.status(400).json({ error: 'Uno o ninguno de los usuarios existe.' });
         }
 
         // crear el mensaje si los dos usuarios existen
