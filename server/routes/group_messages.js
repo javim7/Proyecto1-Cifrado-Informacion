@@ -30,29 +30,32 @@ router.get('/:id', async (req, res) => {
  * POST /messages/groups
  */
 // crear un mensaje de grupo
-router.post('/', async (req, res) => {
-    const { group_id, author, encrypted_message } = req.body;
-    
-    if (!mongoose.Types.ObjectId.isValid(group_id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
-
-    const group = await Group.findById(group_id);
-    const user = await User.findOne({ username: author.username });
-
-    if (!group) {
-        return res.status(404).json({ error: 'Grupo no encontrado' });
-    }
-
-    if (!user) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
+router.post('/:nombre', async (req, res) => {
+    const { message, autor } = req.body;
+    const { nombre } = req.params;
 
     try {
+        const user = await User.findOne({ username: autor });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        // console.log(user)
+        const group = await Group.findOne({ nombre });
+        
+        // verificar si el user es parte del grupo
+        if (!group.usuarios.includes(user._id)) {
+            return res.status(400).json({ error: 'El usuario no es parte del grupo' });
+        }
+
+        if (!group) {
+            return res.status(404).json({ error: 'Grupo no encontrado' });
+        }
+
         const newMessage = new group_Message({
-            group_id,
-            author,
-            encrypted_message
+            group_id: group._id,
+            autor: user,
+            message
         });
 
         const savedMessage = await newMessage.save();
@@ -62,6 +65,6 @@ router.post('/', async (req, res) => {
         console.error('Error creating group message:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-})
+});
 
 module.exports = router

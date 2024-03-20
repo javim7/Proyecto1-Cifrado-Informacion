@@ -11,6 +11,11 @@ const router = express.Router()
 // obtener todos los grupos
 router.get('/', async (req, res) => {
     const groups = await Group.find({}).sort({createdAt: -1})
+    //retornar todos los campos excepto contrasena
+    groups.forEach(group => {
+        group.contraseña = undefined;
+    });
+
     res.status(200).json(groups)
 })
 
@@ -19,12 +24,12 @@ router.get('/', async (req, res) => {
  */
 // crear un grupo
 router.post('/', async (req, res) => {
-    const { name, users, password, symmetric_key } = req.body;
+    const { nombre, clave_simetrica, usuarios, contraseña  } = req.body;
 
     try {
         const userList = [];
 
-        for (const username of users) {
+        for (const username of usuarios) {
             const user = await User.findOne({ username });
 
             
@@ -36,10 +41,10 @@ router.post('/', async (req, res) => {
         }
 
         const newGroup = new Group({
-            name,
-            users: userList,
-            password,
-            symmetric_key
+            nombre,
+            usuarios: userList,
+            contraseña,
+            clave_simetrica
         });
 
         const savedGroup = await newGroup.save();
@@ -70,7 +75,7 @@ router.patch('/:id', async (req, res) => {
             const user = await User.findOne({ username });
 
             if (user) {
-                group.users.push(user);
+                group.usuarios.push(user);
                 const updatedGroup = await group.save();
                 res.status(200).json(updatedGroup);
             } else {
@@ -90,25 +95,26 @@ router.patch('/:id', async (req, res) => {
  * DELETE /groups/:name
  */
 // eliminar un grupo
-router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid ID' });
-    }
+router.delete('/:nombre', async (req, res) => {
+    const { nombre } = req.params;
 
     try {
-        const group = await Group.findByIdAndDelete(id);
+        // Find and delete the group by its name
+        const group = await Group.findOneAndDelete({ nombre });
 
+        // Check if the group exists
         if (group) {
+            // If group exists, send success response
             res.status(200).json(group);
         } else {
+            // If group not found, send 404 response
             res.status(404).json({ error: 'Group not found' });
         }
     } catch (error) {
+        // If any error occurs, send 500 response with error message
         console.error('Error deleting group:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-})
+});
 
 module.exports = router

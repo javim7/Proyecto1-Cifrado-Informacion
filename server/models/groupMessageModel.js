@@ -8,11 +8,11 @@ const groupMessageSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },  
-    author: {
+    autor: {
         type: User.schema,
         required: true
     },
-    encrypted_message: {
+    message: {
         type: String,
         required: true
     }

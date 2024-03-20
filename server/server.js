@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 app.use('/users', userRoutes)
 app.use('/messages', messageRoutes)
 app.use('/groups', groupRoutes)
-app.use('/group_messages', group_messageRoutes)
+app.use('/messages/groups', group_messageRoutes)
 
 // conectar a la base de datos
 mongoose.connect(process.env.MONGO_URI)

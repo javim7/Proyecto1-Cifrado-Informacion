@@ -4,18 +4,18 @@ const Schema = mongoose.Schema;
 const User = require('../models/userModel')
 
 const groupSchema = new Schema({
-    name: {
+    nombre: {
         type: String,
         required: true
     },
-    users: {
+    usuarios: {
         type: [User.schema]
     },
-    password: {
+    contraseña: {
         type: String,
         required: false
     },
-    symmetric_key: {
+    clave_simetrica: {
         type: String,
         required: false
     }

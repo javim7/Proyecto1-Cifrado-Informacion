@@ -13,16 +13,12 @@ router.get('/', async (req, res) => {
     res.status(200).json(users)
 })
 
-// obtener un ususario especifico
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
+// obtener un usuario especifico por su nombre de usuario
+router.get('/:username', async (req, res) => {
+    const { username } = req.params;
 
     try {
-        const user = await User.findById(id);
+        const user = await User.findOne({ username });
         if (user) {
             res.status(200).json(user);
         } else {
@@ -34,17 +30,12 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// obtener la llave publica del usuario en base 64
-router.get('/:id/key', async (req, res) => {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
+// obtener la llave publica del usuario en base 64 por su nombre de usuario
+router.get('/:username/key', async (req, res) => {
+    const { username } = req.params;
 
     try {
-
-        const user = await User.findById(id);
+        const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
@@ -64,7 +55,7 @@ router.get('/:id/key', async (req, res) => {
  */
 // crear un usuario
 router.post('/', async (req, res) => {
-    const {public_key, username} = req.body
+    const {username, public_key} = req.body
 
     try {
         const user = await User.create({public_key, username})
@@ -78,67 +69,81 @@ router.post('/', async (req, res) => {
  * PATCH /users
  */
 //actualiza la llave publica de un usuario
-router.patch('/:id/key', async (req, res) => {
-    const { id } = req.params;
-    const { public_key } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
+router.patch('/:username', async (req, res) => {
+    // const { username } = req.params;
+    const { username, public_key } = req.body;
 
     try {
-        const user = await User.findByIdAndUpdate(id, { public_key }, { new: true });
+        // Find and update the user by username
+        const user = await User.findOneAndUpdate(
+            { username },
+            { public_key },
+            { new: true }
+        );
+
+        // Check if the user exists
         if (user) {
-            res.status(200).json({ mssg: 'Llave actualizada correctamente', user });
+            // If user exists, send success response with updated user
+            res.status(200).json({ message: 'Llave actualizada correctamente', user });
         } else {
+            // If user not found, send 404 response
             res.status(404).json({ error: 'Usuario no encontrado' });
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // If any error occurs, send 500 response with error message
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
-})
+});
 
 /**
  * DELETE /users
  */
-// eliminar un usuario
-router.delete('/:id', async (req, res) => {
-    const {id} = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
+// Eliminar un usuario por su nombre de usuario
+router.delete('/:username', async (req, res) => {
+    const { username } = req.params;
 
     try {
-        const user = await User.findByIdAndDelete(id)
+        // Find and delete the user by username
+        const user = await User.findOneAndDelete({ username });
+        
+        // Check if the user exists
         if (user) {
-            res.status(200).json({mssg: 'Usuario eliminado correctamente'})
+            // If user exists, send success response
+            res.status(200).json({ message: 'Usuario eliminado correctamente' });
         } else {
-            res.status(404).json({error: 'Usuario no encontrado'})
-        } 
-    }catch (error) {
-        res.status(500).json({error: error.message})
-    }
-})
-
-//elimina la llave de un ususario
-router.delete('/:id/key', async (req, res) => {
-    const {id} = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'ID invalido' });
-    }
-
-    try {
-        const user = await User.findByIdAndUpdate(id, {public_key: ''}, {new: true})
-        if (user) {
-            res.status(200).json({mssg: 'Llave eliminada correctamente'})
-        } else {
-            res.status(404).json({error: 'Usuario no encontrado'})
+            // If user not found, send 404 response
+            res.status(404).json({ error: 'Usuario no encontrado' });
         }
     } catch (error) {
-        res.status(500).json({error: error.message})
+        // If any error occurs, send 500 response with error message
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
-})
+});
+
+// Eliminar la llave de un usuario por su nombre de usuario
+router.delete('/key/:username', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        // Find and update the user by username to remove the public key
+        const user = await User.findOneAndUpdate(
+            { username },
+            { public_key: '' },
+            { new: true }
+        );
+        
+        // Check if the user exists
+        if (user) {
+            // If user exists, send success response
+            res.status(200).json({ message: 'Llave eliminada correctamente' });
+        } else {
+            // If user not found, send 404 response
+            res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        // If any error occurs, send 500 response with error message
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 module.exports = router

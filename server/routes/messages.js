@@ -9,13 +9,13 @@ const router = express.Router()
  * GET /messages
  */
 // obtener todos los mensajes entre dos usuarios
-router.get('/:username_origin/users/:username_destiny', async (req, res) => {
-    const { username_origin, username_destiny } = req.params;
+router.get('/users/:username_origen/:username_destino', async (req, res) => {
+    const { username_origen, username_destino } = req.params;
 
     try {
         // revisar si los dos usuarios existen
-        const originUser = await User.findOne({ username: username_origin });
-        const destinyUser = await User.findOne({ username: username_destiny });
+        const originUser = await User.findOne({ username: username_origen });
+        const destinyUser = await User.findOne({ username: username_destino });
 
         if (!originUser || !destinyUser) {
             return res.status(400).json({ error: 'One or both usernames do not exist' });
@@ -23,8 +23,8 @@ router.get('/:username_origin/users/:username_destiny', async (req, res) => {
 
         const messages = await Message.find({
             $or: [
-                { username_origin, username_destiny },
-                { username_origin: username_destiny, username_destiny: username_origin }
+                { username_origen, username_destino },
+                { username_origen: username_destino, username_destino: username_origen }
             ]
         }).sort({ createdAt: 'asc' }); 
 
@@ -39,24 +39,23 @@ router.get('/:username_origin/users/:username_destiny', async (req, res) => {
  * POST /messages
  */
 // enviar un mensaje a un usuario destino
-router.post('/:username_destiny', async (req, res) => {
-    const { username_destiny } = req.params;
-    const { encrypted_message, username_origin } = req.body;
+router.post('/:username_destino', async (req, res) => {
+    const { username_destino } = req.params;
+    const { message, username_origen } = req.body;
     
     try {
         // revisar si los dos usuarios existen
-        const originUser = await User.findOne({ username: username_origin });
-        const destinyUser = await User.findOne({ username: username_destiny });
-        console.log('originUser:', originUser, 'destiny', destinyUser)
+        const originUser = await User.findOne({ username: username_origen });
+        const destinyUser = await User.findOne({ username: username_destino });
 
         if (!originUser || !destinyUser) {
             return res.status(400).json({ error: 'Uno o ninguno de los usuarios existe.' });
         }
 
         // crear el mensaje si los dos usuarios existen
-        const message = new Message({ encrypted_message, username_origin, username_destiny });
-        await message.save();
-        res.status(201).json(message);
+        const messagee = new Message({ message, username_origen, username_destino });
+        await messagee.save();
+        res.status(201).json(messagee);
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json({ error: 'Internal server error' });

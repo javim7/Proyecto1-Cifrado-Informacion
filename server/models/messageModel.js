@@ -4,15 +4,15 @@ const Schema = mongoose.Schema;
 
 // Schema del mensaje
 const messageSchema = new Schema({
-    encrypted_message: {
+    message: {
         type: String,
         required: true
     },
-    username_origin: {
+    username_origen: {
         type: String,
         required: true
     },
-    username_destiny: {
+    username_destino: {
         type: String,
         required: true
     }
