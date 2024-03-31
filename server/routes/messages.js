@@ -26,7 +26,7 @@ router.get('/users/:username_origen/:username_destino', async (req, res) => {
                 { username_origen, username_destino },
                 { username_origen: username_destino, username_destino: username_origen }
             ]
-        }).sort({ createdAt: 'asc' }); 
+        }).sort({ createdAt: 'asc' });
 
         res.status(200).json(messages);
     } catch (error) {
@@ -36,13 +36,43 @@ router.get('/users/:username_origen/:username_destino', async (req, res) => {
 })
 
 /**
+ * GET /users/:username
+ */
+// obtener todos los mensajes de un usuario
+router.get('/chats/:username', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        // revisar si el usuario existe
+        const user = await User.findOne({ username: username });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Username does not exist' });
+        }
+
+        const messages = await Message.find({
+            $or: [
+                { username_origen: username },
+                { username_destino: username }
+            ]
+        }).sort({ createdAt: 'asc' });
+
+        res.status(200).json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+/**
  * POST /messages
  */
 // enviar un mensaje a un usuario destino
 router.post('/:username_destino', async (req, res) => {
     const { username_destino } = req.params;
     const { message, username_origen } = req.body;
-    
+
     try {
         // revisar si los dos usuarios existen
         const originUser = await User.findOne({ username: username_origen });
@@ -60,6 +90,6 @@ router.post('/:username_destino', async (req, res) => {
         console.error('Error sending message:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-})  
+})
 
 module.exports = router;
