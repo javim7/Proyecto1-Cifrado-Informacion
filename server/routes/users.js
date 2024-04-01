@@ -9,7 +9,7 @@ const router = express.Router()
  */
 // obtener todos los usuarios
 router.get('/', async (req, res) => {
-    const users = await User.find({}).sort({date_created: -1})
+    const users = await User.find({}).sort({ date_created: -1 })
     res.status(200).json(users)
 })
 
@@ -55,13 +55,13 @@ router.get('/:username/key', async (req, res) => {
  */
 // crear un usuario
 router.post('/', async (req, res) => {
-    const {username, public_key} = req.body
+    const { username, public_key } = req.body
 
     try {
-        const user = await User.create({public_key, username})
+        const user = await User.create({ public_key, username })
         res.status(200).json(user)
     } catch (error) {
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message })
     }
 })
 
@@ -105,7 +105,7 @@ router.delete('/:username', async (req, res) => {
     try {
         // Find and delete the user by username
         const user = await User.findOneAndDelete({ username });
-        
+
         // Check if the user exists
         if (user) {
             // If user exists, send success response
@@ -131,7 +131,7 @@ router.delete('/key/:username', async (req, res) => {
             { public_key: '' },
             { new: true }
         );
-        
+
         // Check if the user exists
         if (user) {
             // If user exists, send success response

@@ -6,6 +6,7 @@ const userRoutes = require('./routes/users')
 const messageRoutes = require('./routes/messages')
 const groupRoutes = require('./routes/groups')
 const group_messageRoutes = require('./routes/group_messages')
+const keys = require('./routes/keys')
 
 // aplicacion de express
 const app = express()
@@ -25,6 +26,7 @@ app.use('/users', userRoutes)
 app.use('/messages', messageRoutes)
 app.use('/groups', groupRoutes)
 app.use('/messages/groups', group_messageRoutes)
+app.use('/keys', keys)
 
 // conectar a la base de datos
 mongoose.connect(process.env.MONGO_URI)

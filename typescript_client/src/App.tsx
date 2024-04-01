@@ -12,7 +12,8 @@ import '@mantine/core/styles.css';
 
 import CifradosNavbar from "./components/CifradosNavbar";
 import { CifradosGrupos } from "./components/CifradosGrupos";
-import {Usuarios} from "./components/Usuarios";
+import { Usuarios } from "./components/Usuarios";
+import { CifradosSignIn } from "./components/SignIn"
 
 
 
@@ -48,7 +49,10 @@ function App() {
 
   return (
     <MantineProvider>
-      <div
+      <div>
+        <CifradosSignIn />
+      </div>
+      {/* <div
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -59,7 +63,7 @@ function App() {
       >
         <CifradosNavbar onTabChange={handleTabChange} />
         {renderContent()}
-      </div>
+      </div> */}
     </MantineProvider>
   );
 }
