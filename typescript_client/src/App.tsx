@@ -12,6 +12,7 @@ import '@mantine/core/styles.css';
 
 import CifradosNavbar from "./components/CifradosNavbar";
 import { CifradosGrupos } from "./components/CifradosGrupos";
+import {Usuarios} from "./components/Usuarios";
 
 
 
@@ -33,7 +34,7 @@ function App() {
       case 'Grupos':
         return <CifradosGrupos />;
       case 'Usuarios':
-        return <div>Contenido de Usuarios</div>;
+        return <Usuarios />;
       case 'Llaves':
         return <div>Contenido de Llaves</div>;
       case 'Base de datos':
