@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, ScrollArea, Text } from '@mantine/core';
+import { Table } from 'antd';
 
 export function Usuarios() {
     const [usuarios, setUsuarios] = useState([]);
@@ -21,33 +21,38 @@ export function Usuarios() {
 
     useEffect(() => {
         getUsuarios();
-    }, []); // El arreglo vacío asegura que se ejecute solo una vez
+    }, []);
+
+    const columns = [
+        {
+            title: 'ID',
+            dataIndex: '_id',
+            key: 'id',
+            width: '25%',
+        },
+        {
+            title: 'Public Key',
+            dataIndex: 'public_key',
+            key: 'publicKey',
+            width: '30%',
+        },
+        {
+            title: 'Username',
+            dataIndex: 'username',
+            key: 'username',
+            width: '45%',
+        },
+    ];
 
     return (
-        <div>
-            <Text size="xl" weight={700} style={{ marginBottom: 20 }}>
-                Usuarios
-            </Text>
-            <ScrollArea style={{ maxHeight: 400 }}>
-                <Table striped style={{ width: '100%' }}>
-                    <thead>
-                        <tr>
-                            <th style={{ width: '25%' }}>ID</th>
-                            <th style={{ width: '30%' }}>Public Key</th>
-                            <th style={{ width: '50%' }}>Username</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usuarios.map((usuario, index) => (
-                            <tr key={index}>
-                                <td>{usuario._id}</td>
-                                <td>{usuario.public_key}</td>
-                                <td>{usuario.username}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </ScrollArea>
+        <div style={{ textAlign: 'center', maxWidth: "100%"}}>
+            <h1>Usuarios</h1>
+            <Table
+                dataSource={usuarios}
+                columns={columns}
+                loading={loading}
+                scroll={{ y: 400 }}
+            />
         </div>
     );
-};
+}
