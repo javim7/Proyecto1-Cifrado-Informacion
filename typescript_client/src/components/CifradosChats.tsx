@@ -9,6 +9,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { TextInput, TextInputProps, ActionIcon, useMantineTheme, rem } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 
+import { ScrollArea } from '@mantine/core';
+
 
 
 const rolesData = ["Student"]; // Asume alguna lógica para determinar roles si es necesario
@@ -36,6 +38,8 @@ export function CifradosChats({ usuarioActual }) {
         //         "username_origen": "mombius"
         // }
 
+
+
         fetch(`http://localhost:3000/messages/${chatDestino}`, {
             method: 'POST',
             headers: {
@@ -50,11 +54,12 @@ export function CifradosChats({ usuarioActual }) {
             .then((data) => {
                 console.log('Mensaje enviado:', data);
                 setTodosLosChatsConUsuario([...todos_los_chats_con_usuario, data]);
-                setMensajeEscrito('');
             })
             .catch((error) => {
                 console.error('Error al enviar el mensaje:', error);
             });
+
+        setMensajeEscrito('')
 
 
 
@@ -163,11 +168,13 @@ export function CifradosChats({ usuarioActual }) {
             <Modal opened={opened} onClose={close} size="auto" title={`Chat con ${chatDestino}`}>
                 <div>Contenido del chat con {chatDestino}</div>
                 <div>
-                    {todos_los_chats_con_usuario.map((chat: any) => (
-                        <div key={chat._id}>
-                            <Text>{chat.message}</Text>
-                        </div>
-                    ))}
+                    <ScrollArea h={600} offsetScrollbars scrollbarSize={2}>
+                        {todos_los_chats_con_usuario.map((chat: any) => (
+                            <div key={chat._id}>
+                                <Text>{chat.message}</Text>
+                            </div>
+                        ))}
+                    </ScrollArea>
                 </div>
                 <TextInput
                     radius="xl"
@@ -185,6 +192,7 @@ export function CifradosChats({ usuarioActual }) {
                         </ActionIcon>
                     }
                     onChange={(event) => setMensajeEscrito(event.currentTarget.value)}
+                    value={mensajeEscrito}
                 />
             </Modal>
             <Table.ScrollContainer minWidth={800}>
