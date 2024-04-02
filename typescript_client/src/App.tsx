@@ -1,6 +1,6 @@
 // App.tsx
 import { MantineProvider } from '@mantine/core';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 
 
@@ -14,6 +14,7 @@ import CifradosNavbar from "./components/CifradosNavbar";
 import { CifradosGrupos } from "./components/CifradosGrupos";
 import { Usuarios } from "./components/Usuarios";
 import { CifradosSignIn } from "./components/SignIn"
+import { CifradosChats } from "./components/CifradosChats";
 
 
 
@@ -21,6 +22,8 @@ import { CifradosSignIn } from "./components/SignIn"
 function App() {
 
   const [activeTab, setActiveTab] = useState('Chats');
+
+  const [usuario_actual, setUsuarioActual] = useState('');
 
   // Función para cambiar el tab activo
   const handleTabChange = (tabName: string) => {
@@ -31,7 +34,7 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'Chats':
-        return <div>Contenido de Chats</div>;
+        return <CifradosChats usuarioActual={usuario_actual} />;
       case 'Grupos':
         return <CifradosGrupos />;
       case 'Usuarios':
@@ -47,23 +50,29 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    console.log('Ha cambiado el usuario actual:', usuario_actual);
+  }, [usuario_actual]);
+
+
   return (
     <MantineProvider>
       <div>
-        <CifradosSignIn />
+        {usuario_actual === '' ? <CifradosSignIn setUsuarioActual={setUsuarioActual} /> :
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              minHeight: '100vh',
+              overflowY: 'hidden',
+              overflowX: 'hidden',
+            }}
+          >
+            <CifradosNavbar onTabChange={handleTabChange} setUsuarioActual={setUsuarioActual} />
+            {renderContent()}
+          </div>
+        }
       </div>
-      {/* <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          minHeight: '100vh',
-          overflowY: 'hidden',
-          overflowX: 'hidden',
-        }}
-      >
-        <CifradosNavbar onTabChange={handleTabChange} />
-        {renderContent()}
-      </div> */}
     </MantineProvider>
   );
 }

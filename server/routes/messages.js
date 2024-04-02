@@ -36,18 +36,24 @@ router.get('/users/:username_origen/:username_destino', async (req, res) => {
 })
 
 /**
- * GET /users/:username
+ * GET /all_users_with_messages
  */
-// obtener todos los mensajes de un usuario
-router.get('/chats/:username', async (req, res) => {
+// Obtener todos los usuarios con los que se ha tenido una conversación siendo nosotros el origen o destino
+router.get('/all_chats/:username', async (req, res) => {
+
     const { username } = req.params;
 
     try {
+
+        console.log('username', username);
+
         // revisar si el usuario existe
-        const user = await User.findOne({ username: username });
+        const user = await User.findOne({
+            username
+        });
 
         if (!user) {
-            return res.status(400).json({ error: 'Username does not exist' });
+            return res.status(400).json({ error: 'El usuario no existe' });
         }
 
         const messages = await Message.find({
@@ -57,10 +63,33 @@ router.get('/chats/:username', async (req, res) => {
             ]
         }).sort({ createdAt: 'asc' });
 
-        res.status(200).json(messages);
+        let users = [];
+
+        messages.forEach(message => {
+            if (message.username_origen !== username) {
+                users.push(message.username_origen);
+            } else {
+                users.push(message.username_destino);
+            }
+        });
+
+        const uniqueUsers = [...new Set(users)];
+
+        console.log('uniqueUsers', uniqueUsers);
+
+        // Obtenemos los datos de los usuarios y los devolvemos
+
+        const usersData = await User.find({
+            username: { $in: uniqueUsers }
+        });
+
+        res.status(200).json(usersData);
+
     } catch (error) {
+
         console.error('Error fetching messages:', error);
         res.status(500).json({ error: 'Internal server error' });
+
     }
 });
 

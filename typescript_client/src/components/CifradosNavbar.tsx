@@ -21,7 +21,7 @@ const data = [
     { link: '', label: 'Configuracion', icon: IconSettings },
 ];
 
-export default function CifradosNavbar({ onTabChange }: { onTabChange: (tabName: string) => void; }) {
+export default function CifradosNavbar({ onTabChange, setUsuarioActual }: { onTabChange: (tabName: string) => void; setUsuarioActual: (tabName: string) => void; }) {
     const [active, setActive] = useState('');
 
     const links = data.map((item) => (
@@ -55,16 +55,12 @@ export default function CifradosNavbar({ onTabChange }: { onTabChange: (tabName:
             </div>
 
             <div className={classes.footer}>
-                <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
-                    <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-                    <span>Cambiar cuenta</span>
-                </a>
 
-                <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+                <a href="#" className={classes.link} onClick={(event) => { event.preventDefault(); setUsuarioActual(''); }}>
                     <IconLogout className={classes.linkIcon} stroke={1.5} />
                     <span>Cerrar sesión</span>
                 </a>
             </div>
-        </nav>
+        </nav >
     );
 }
