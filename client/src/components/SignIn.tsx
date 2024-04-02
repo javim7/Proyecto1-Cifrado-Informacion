@@ -12,7 +12,7 @@ import {
     rem,
 } from '@mantine/core';
 
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLef, IconCornerDownRight } from '@tabler/icons-react';
 
 import classes from './SignIn.module.css';
 
@@ -150,28 +150,34 @@ export function CifradosSignIn({ setUsuarioActual }: { setUsuarioActual: (tabNam
     }
 
     return (
-        <Container size={460} my={30}>
-            <Title className={classes.title} ta="center">
-                Quehubo 2
-            </Title>
-            <Text c="dimmed" fz="sm" ta="center">
-                La version mejorada del Grupo 3
-            </Text>
+        <div
+            className={classes.SignInGeneralForm}
+        >
+            <Container className={classes.Container}>
+                <Title className={classes.title} ta="center">
+                    Quehubo 2
+                </Title>
+                <Text c="dimmed" fz="sm" ta="center" style={{ marginTop: "20px" }}>
+                    Version mejorada de nuestro chat
+                </Text>
 
-            <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-                <TextInput
-                    label="Username"
-                    placeholder="Coily"
-                    required
-                    onChange={(event) => setNombreUsuario(event.currentTarget.value)}
-                />
-                <Group justify="space-between" mt="lg" className={classes.controls}>
-                    <Button
-                        className={classes.control}
-                        onClick={handleLogin}
-                    >Login</Button>
-                </Group>
-            </Paper>
-        </Container>
+                <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
+                    <TextInput
+                        label="Username"
+                        placeholder="Coily"
+                        required
+                        onChange={(event) => setNombreUsuario(event.currentTarget.value)}
+
+                    />
+                    <Group justify="space-between" mt="lg" className={classes.controls}>
+                        <Button
+                            className={classes.control}
+                            onClick={handleLogin}
+                            leftSection={<IconCornerDownRight style={{ width: rem(16), height: rem(16) }} />}
+                        >Login</Button>
+                    </Group>
+                </Paper>
+            </Container>
+        </div>
     );
 }
