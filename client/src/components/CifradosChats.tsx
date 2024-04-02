@@ -61,26 +61,6 @@ export function CifradosChats({ usuarioActual }) {
 
         setMensajeEscrito('')
 
-
-
-        // // Tenemos que enviar el mensaje a http://localhost:3000/messages/users/:usuarioActual/:username_chat_destino
-        // fetch(`http://localhost:3000/messages/users/${usuarioActual}/${chatDestino}`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         message: mensajeEscrito
-        //     })
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log('Mensaje enviado:', data);
-        //         setTodosLosChatsConUsuario([...todos_los_chats_con_usuario, data]);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error al enviar el mensaje:', error);
-        //     });
     }
 
     function handleChatOpen(username_chat_destino: any) {

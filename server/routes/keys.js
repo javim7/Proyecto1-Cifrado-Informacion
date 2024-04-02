@@ -96,4 +96,67 @@ router.post('/', async (req, res) => {
 });
 
 
+/**
+ * GET /key_pair/:username
+ */
+// Obtener tanto la llave privada como la llave pública de un usuario, la llave privada se en la tabla Keys y la llave pública es una propiedad
+// de la tabla User
+
+router.get('/key_pair/:username', async (req, res) => {
+
+    const { username } = req.params;
+
+    try {
+
+        // revisar si el usuario existe
+        const user = await User.findOne({
+            username: username
+        });
+
+        if (!user) {
+
+            return res.status(400).json({
+                error: 'El nombre de usuario no existe'
+            });
+
+        }
+
+
+        // Si el usuario existe entonces buscamos la llave privada en la tabla Keys
+
+        const private_key = await Keys.findOne({
+            username: username
+        });
+
+        if (!private_key) {
+
+            return res.status(400).json({
+                error: 'No se ha encontrado la llave privada'
+            });
+
+        }
+
+        console.log("User:", user);
+
+        console.log("Lave publica:", user.public_key);
+
+        console.log("Llave privada:", private_key);
+
+        res.status(200).json({
+            llave_publica: user.public_key,
+            llave_privada: private_key.private_key
+        });
+
+    } catch (error) {
+
+        console.error('Error fetching key pair:', error);
+        res.status(500).json({
+            error: 'Error interno del servidor'
+        });
+
+    }
+
+});
+
+
 module.exports = router;
