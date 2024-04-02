@@ -11,9 +11,11 @@ import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 
 import { ScrollArea } from '@mantine/core';
 
+import classes from './CifradosChats.module.css';
 
 
-const rolesData = ["Student"]; // Asume alguna lógica para determinar roles si es necesario
+
+const rolesData = ["Estudiante"]; // Asume alguna lógica para determinar roles si es necesario
 
 export function CifradosChats({ usuarioActual }) {
 
@@ -77,6 +79,13 @@ export function CifradosChats({ usuarioActual }) {
             .then((response) => response.json())
             .then((data) => {
                 console.log('Chats con el usuario actual:', data);
+
+                // Imprimimos todos los objetos "chats" que nos devuelva el servidor
+
+                for (let i = 0; i < data.length; i++) {
+                    console.log(data[i]);
+                }
+
                 setTodosLosChatsConUsuario(data);
             })
             .catch((error) => {
@@ -93,7 +102,7 @@ export function CifradosChats({ usuarioActual }) {
                 const formattedData = data.map(user => ({
                     ...user,
                     avatar: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png', // Imagen predeterminada
-                    role: 'Student', // Ejemplo de cómo asignar roles, ajusta según necesidad
+                    role: 'Estudiante', // Ejemplo de cómo asignar roles, ajusta según necesidad
                     memberSince: user.date_created, // Asume que quieres mostrar la fecha de creación como última actividad
                     active: true, // Decide cómo determinar si el usuario está activo
                 }));
@@ -118,12 +127,7 @@ export function CifradosChats({ usuarioActual }) {
             </Table.Td>
 
             <Table.Td>
-                <Select
-                    data={rolesData}
-                    defaultValue={item.role}
-                    variant="unstyled"
-                    allowDeselect={false}
-                />
+                {item.role}
             </Table.Td>
             <Table.Td>{new Date(item.memberSince).toLocaleDateString()}</Table.Td>
             <Table.Td>
@@ -132,7 +136,7 @@ export function CifradosChats({ usuarioActual }) {
                         fullWidth variant="light"
                         onClick={() => handleChatOpen(item.username)}
                     >
-                        Open
+                        Abrir
                     </Badge>
                 ) : (
                     <Badge color="gray" fullWidth variant="light">
@@ -144,51 +148,59 @@ export function CifradosChats({ usuarioActual }) {
     ));
 
     return (
-        <div>
-            <Modal opened={opened} onClose={close} size="auto" title={`Chat con ${chatDestino}`}>
-                <div>Contenido del chat con {chatDestino}</div>
-                <div>
-                    <ScrollArea h={600} offsetScrollbars scrollbarSize={2}>
-                        {todos_los_chats_con_usuario.map((chat: any) => (
-                            <div key={chat._id}>
-                                <Text>{chat.message}</Text>
-                            </div>
-                        ))}
-                    </ScrollArea>
+        <div className={classes.contenedorGeneral}>
+            <Modal opened={opened} onClose={close} size="auto" title={`Chat con ${chatDestino}`} >
+                <div className={classes.contenedorModal}>
+                    <div>Contenido del chat con {chatDestino}</div>
+                    <div>
+                        <ScrollArea h={600} offsetScrollbars scrollbarSize={2} className={classes.scrollAreaChats}>
+                            {todos_los_chats_con_usuario.map((chat: any) => (
+                                <div key={chat._id}
+                                    className={chat.username_origen === usuarioActual ? classes.mensajePropio : classes.mensajeExterno}
+                                >
+                                    <Text>{chat.message}</Text>
+                                    <Text c="dimmed" size="xs">{chat.createdAt}</Text>
+                                </div>
+                            ))}
+                        </ScrollArea>
+                    </div>
+                    <TextInput
+                        radius="xl"
+                        size="md"
+                        placeholder="Mensaje"
+                        rightSectionWidth={42}
+                        rightSection={
+                            <ActionIcon
+                                size={32}
+                                radius="xl"
+                                variant="filled"
+                                onClick={handleSendMessage}
+                            >
+                                <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                            </ActionIcon>
+                        }
+                        onChange={(event) => setMensajeEscrito(event.currentTarget.value)}
+                        value={mensajeEscrito}
+                    />
                 </div>
-                <TextInput
-                    radius="xl"
-                    size="md"
-                    placeholder="Mensaje"
-                    rightSectionWidth={42}
-                    rightSection={
-                        <ActionIcon
-                            size={32}
-                            radius="xl"
-                            variant="filled"
-                            onClick={handleSendMessage}
-                        >
-                            <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-                        </ActionIcon>
-                    }
-                    onChange={(event) => setMensajeEscrito(event.currentTarget.value)}
-                    value={mensajeEscrito}
-                />
             </Modal>
-            <Table.ScrollContainer minWidth={800}>
-                <Table verticalSpacing="sm">
-
-                    <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>User</Table.Th>
-                            <Table.Th>Role</Table.Th>
-                            <Table.Th>Member since</Table.Th>
-                            <Table.Th>Open chat</Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>{rows}</Table.Tbody>
-                </Table>
-            </Table.ScrollContainer>
+            <div
+                className={classes.contenedorTabla}
+            >
+                <Table.ScrollContainer minWidth={800}>
+                    <Table verticalSpacing="sm">
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>Usuario</Table.Th>
+                                <Table.Th>Profesion</Table.Th>
+                                <Table.Th>Miembro desde</Table.Th>
+                                <Table.Th>Chats</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>{rows}</Table.Tbody>
+                    </Table>
+                </Table.ScrollContainer>
+            </div>
         </div>
     );
 }
