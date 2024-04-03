@@ -38,7 +38,9 @@ Los mensajes en chats grupales se cifran utilizando AES-128 CBC. La clave simét
 
 ## Desafíos
 
-Durante el desarrollo de este proyecto, uno de los principales desafíos fue adaptarnos al uso de JavaScript para el manejo de llaves y cifrados, ya que estábamos más familiarizados con Python. Esto implicó un proceso de aprendizaje para comprender cómo implementar los algoritmos de cifrado en el entorno de JavaScript. Además, para manejar la encriptación y el cifrado/descifrado de mensajes grupales con AES128 CBC, optamos por desarrollar un servidor adicional en Python para facilitar estas operaciones.
+Durante el desarrollo de este proyecto, uno de los principales desafíos fue adaptarnos al uso de JavaScript para el manejo de llaves y cifrados, ya que estábamos más familiarizados con Python. Se nos dificulto esta parte, ya que tuvimos que probar varias librerias para ver cual servia y se adaptaba a nuestras necesidades (hubo unas que no funcionaban de manera optima y otras que estaban deprecadas). Esto implicó un proceso de aprendizaje para comprender cómo implementar los algoritmos de cifrado en el entorno de JavaScript. Además, para manejar la encriptación y el cifrado/descifrado de mensajes grupales con AES128 CBC, optamos por desarrollar un servidor adicional en Python para facilitar estas operaciones.
+
+Otro desafío importante fue decidir dónde almacenar las llaves privadas de los usuarios. Nos encontramos ante la difícil elección entre el almacenamiento local y el almacenamiento en base de datos. Optamos por almacenarlas en la base de datos debido a nuestra intención de permitir que los usuarios inicien sesión desde varios dispositivos. Esta decisión nos permitió tener una opción más segura y escalable, ya que las llaves se guardan en su propia tabla separada, proporcionando una capa adicional de seguridad.
 
 ## Recomendaciones
 
