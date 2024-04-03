@@ -13,9 +13,8 @@ import { ScrollArea } from '@mantine/core';
 
 import classes from './CifradosChats.module.css';
 
+import JSEncrypt from "jsencrypt";
 
-
-const rolesData = ["Estudiante"]; // Asume alguna lógica para determinar roles si es necesario
 
 export function CifradosChats({ usuarioActual }) {
 
@@ -31,37 +30,56 @@ export function CifradosChats({ usuarioActual }) {
 
     function handleSendMessage() {
 
-        console.log('Enviando mensaje:', mensajeEscrito);
+        console.log('[ 1 ] Enviando mensaje:', mensajeEscrito);
 
-        // Tenemos que enviar el mensaje a http://localhost:3000/messages/:chatDestino con body de la siguiente manera:
-
-        // {
-        //     "message": "ralda es una willy",
-        //         "username_origen": "mombius"
-        // }
-
-
-
-        fetch(`http://localhost:3000/messages/${chatDestino}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: mensajeEscrito,
-                username_origen: usuarioActual
-            })
-        })
+        // [ 2 ] Recuperar la clave pública del usuario destino
+        fetch(`http://localhost:3000/keys/public_key/${chatDestino}`)
             .then((response) => response.json())
             .then((data) => {
-                console.log('Mensaje enviado:', data);
-                setTodosLosChatsConUsuario([...todos_los_chats_con_usuario, data]);
+                console.log('[ 2 ] Clave pública del usuario destino:', data);
+
+                // [ 4 ] Convertir la clave pública de Base64 a un formato que JSEncrypt pueda utilizar
+                let publicKey = atob(data); // Utiliza atob para decodificar de Base64
+                console.log('[ 3 ] Clave pública decodificada:', publicKey);
+
+                // [ 6 ] Inicializar JSEncrypt con la clave pública decodificada
+                let crypt = new JSEncrypt({ default_key_size: "512" });
+                crypt.setPublicKey(publicKey);
+
+                // [ 7 ] Cifrar el mensaje con la clave pública
+                let mensajeCifrado = crypt.encrypt(mensajeEscrito);
+                console.log('[ 4 ] Mensaje cifrado:', mensajeCifrado);
+
+                // Aquí iría el código para enviar el mensaje cifrado al servidor o al usuario destino
+                // Por ejemplo: enviarMensajeCifrado(mensajeCifrado);
+
+                fetch(`http://localhost:3000/messages/${chatDestino}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: mensajeCifrado,
+                        username_origen: usuarioActual
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log('Mensaje enviado:', data);
+                        setTodosLosChatsConUsuario([...todos_los_chats_con_usuario, data]);
+                    })
+                    .catch((error) => {
+                        console.error('Error al enviar el mensaje:', error);
+                    });
+
+                setMensajeEscrito('')
             })
             .catch((error) => {
-                console.error('Error al enviar el mensaje:', error);
+                console.error('[ 5 ] Error al recuperar la clave pública:', error);
             });
 
-        setMensajeEscrito('')
+
+
 
     }
 
@@ -80,13 +98,56 @@ export function CifradosChats({ usuarioActual }) {
             .then((data) => {
                 console.log('Chats con el usuario actual:', data);
 
-                // Imprimimos todos los objetos "chats" que nos devuelva el servidor
+                // Descifrar todos los mensajes con la clave privada del usuario actual desde la ruta http://localhost:3000/keys/private_key/:usuarioActual
 
-                for (let i = 0; i < data.length; i++) {
-                    console.log(data[i]);
-                }
+                fetch(`http://localhost:3000/keys/private_key/${usuarioActual}`)
+                    .then((response) => response.json())
+                    .then((data2) => {
+                        console.log('Clave privada del usuario actual:', data);
 
-                setTodosLosChatsConUsuario(data);
+                        // Convertir la clave privada de Base64 a un formato que JSEncrypt pueda utilizar
+                        let privateKey = atob(data2); // Utiliza atob para decodificar de Base64
+                        console.log('Clave privada decodificada:', privateKey);
+
+                        // Inicializar JSEncrypt con la clave privada decodificada
+                        let crypt = new JSEncrypt({ default_key_size: "512" });
+                        crypt.setPrivateKey(privateKey);
+
+                        // Mejor intentamos 1 por 1 debido a que ciertos mensajes pueden dar error o estar corruptos al ser descifrados
+
+                        let mensajesDescifrados = [];
+
+                        for (let i = 0; i < data.length; i++) {
+                            try {
+
+                                console.log(" * Tratando de descifrar el mensaje:", data[i].message)
+
+                                let mensajeDescifrado = crypt.decrypt(data[i].message);
+
+                                console.log(' * Mensaje descifrado:', mensajeDescifrado);
+
+                                if (mensajeDescifrado === null || mensajeDescifrado === undefined) {
+
+                                    mensajesDescifrados.push({ ...data[i], message: 'ERROR CON: ' + data[i].message });
+
+                                } else {
+
+                                    mensajesDescifrados.push({ ...data[i], message: mensajeDescifrado });
+
+                                }
+
+                            } catch (error) {
+                                console.error('Error al descifrar el mensaje:', error);
+                            }
+                        }
+
+                        console.log('Mensajes descifrados:', mensajesDescifrados);
+
+                        setTodosLosChatsConUsuario(mensajesDescifrados);
+                    })
+                    .catch((error) => {
+                        console.error('Error al obtener la clave privada:', error);
+                    });
             })
             .catch((error) => {
                 console.error('Error al obtener los chats del usuario actual:', error);

@@ -158,5 +158,104 @@ router.get('/key_pair/:username', async (req, res) => {
 
 });
 
+/**
+ * GET /private_key/:username
+ */
+// Obtener la llave privada de un usuario, la llave privada se ecneuntra en la tabla Keys
+
+router.get('/private_key/:username', async (req, res) => {
+
+    const { username } = req.params;
+
+    try {
+
+        // revisar si el usuario existe
+        const user = await User.findOne({
+            username: username
+        });
+
+        if (!user) {
+
+            return res.status(400).json({
+
+                error: 'El nombre de usuario no existe'
+
+            });
+
+        }
+
+        const private_key = await Keys.findOne({
+
+            username: username
+
+        });
+
+        if (!private_key) {
+
+            return res.status(400).json({
+
+                error: 'No se ha encontrado la llave privada'
+
+            });
+
+        }
+
+        res.status(200).json(private_key.private_key);
+
+    } catch (error) {
+
+        console.error('Error fetching private key:', error);
+
+        res.status(500).json({
+
+            error: 'Error interno del servidor'
+
+        });
+
+    }
+
+});
+
+/**
+ * GET /public_key/:username
+ */
+// Obtener la llave pública de un usuario, la llave pública se encuentra en la tabla User
+
+router.get('/public_key/:username', async (req, res) => {
+
+    const { username } = req.params;
+
+    try {
+
+        // revisar si el usuario existe
+        const user = await User.findOne({
+            username: username
+        });
+
+        if (!user) {
+
+            return res.status(400).json({
+
+                error: 'El nombre de usuario no existe'
+
+            });
+
+        }
+
+        res.status(200).json(user.public_key);
+
+    } catch (error) {
+
+        console.error('Error fetching public key:', error);
+
+        res.status(500).json({
+
+            error: 'Error interno del servidor'
+
+        });
+
+    }
+
+});
 
 module.exports = router;
