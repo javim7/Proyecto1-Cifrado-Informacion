@@ -17,3 +17,35 @@
 .scrolled {
     box-shadow: var(--mantine-shadow-sm);
 }
+
+.contenedorPrincipal {
+
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url('https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-10.png');
+    background-size: cover;
+    /* Ajusta la imagen para cubrir completamente el contenedor */
+    background-position: center;
+    /* Centra la imagen en el contenedor */
+    background-repeat: no-repeat;
+    /* Evita que la imagen se repita */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.contenedorTabla {
+    background-color: white;
+    /* Color de fondo blanco */
+    width: 60vw;
+    border-radius: 8px;
+    /* Bordes redondeados */
+    box-shadow: 0 40px 60px rgba(0, 0, 0, 0.5);
+    /* Sombra leve */
+    padding: 20px;
+    /* Espacio interior para mantener el contenido dentro de los márgenes del fondo blanco */
+}

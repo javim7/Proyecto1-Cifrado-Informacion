@@ -53,38 +53,6 @@ export function CifradosGrupos({ usuarioActual }) {
 
     const [usuariosAgregar, setUsuariosAgregar] = useState([]);
 
-    useEffect(() => {
-        fetch(`http://localhost:3000/users/`)
-            .then((response) => response.json())
-            .then((data) => {
-                // Transforma los datos si es necesario antes de establecer el estado
-                const formattedData = data.map(user => ({
-                    ...user,
-                    avatar: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png', // Imagen predeterminada
-                    role: 'Estudiante', // Ejemplo de cómo asignar roles, ajusta según necesidad
-                    memberSince: user.date_created, // Asume que quieres mostrar la fecha de creación como última actividad
-                    active: true, // Decide cómo determinar si el usuario está activo
-                }));
-
-                console.log('Usuarios retraidos:', formattedData);
-
-                setPosiblesUsuariosAgregar(formattedData);
-
-                // Agregamos el usuario actual a la lista de usuarios a agregar
-
-                setUsuariosAgregar([usuarioActual]);
-
-                // Lo quitamos de la lista de posibles usuarios a agregar
-
-                setPosiblesUsuariosAgregar(posiblesUsuariosAgregar.filter((item) => item.username !== usuarioActual));
-
-                console.log('Usuarios a agregar:', usuariosAgregar);
-            })
-            .catch((error) => {
-                console.error('Error al obtener los chats del usuario actual:', error);
-            });
-    }, [usuarioActual]); // Asegúrate de incluir las dependencias correctas aquí
-
     const rowsUsuariosParaAgregar = posiblesUsuariosAgregar.map((item) => (
         <Table.Tr key={item._id}>
             <Table.Td>
@@ -119,13 +87,104 @@ export function CifradosGrupos({ usuarioActual }) {
 
 
 
-    const rowsGrupos = data.map((row) => (
-        <Table.Tr key={row.name}>
-            <Table.Td>{row.name}</Table.Td>
-            <Table.Td>{row.email}</Table.Td>
-            <Table.Td>{row.company}</Table.Td>
+
+
+    // Aqui controlamos todo lo que sucede al cargar el componente, que es retraer todos los grupos a los que pertenece el usuario actual etc
+
+    const [gruposEnLosQueSePresenta, setGruposEnLosQueSePresenta] = useState([]);
+
+    useEffect(() => {
+
+        console.log(' [ 1 ] Cargando grupos en los que se presenta:', usuarioActual);
+
+        // Aqui retraemos todos los grupos en los que se presenta el usuario actual haciendo fetch a http://localhost:3500/groups/get_all_groups_by_user/:username
+
+        fetch(`http://localhost:3500/groups/get_all_groups_by_user/${usuarioActual}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 2 ] Grupos en los que se presenta:', data);
+                setGruposEnLosQueSePresenta(data);
+            });
+
+    }, [usuarioActual]);
+
+    const rowsGruposActuales = gruposEnLosQueSePresenta.map((grupo) => (
+        <Table.Tr key={grupo._id}>
+            <Table.Td>
+                <Group gap="sm">
+                    <div>
+                        <Text size="sm" weight={500}>
+                            {grupo.nombre}
+                        </Text>
+
+                    </div>
+                </Group>
+            </Table.Td>
+
+            <Table.Td>
+                {grupo.clave_simetrica}
+            </Table.Td>
+
+            <Table.Td>
+                {grupo.vector}
+            </Table.Td>
+
+            <Table.Td>
+                {grupo.contraseña}
+            </Table.Td>
+            <Table.Td>{new Date(grupo.fecha_creacion).toLocaleDateString()}</Table.Td>
+
+            <Table.Td>
+                {grupo.usuarios.map(usuario => (
+                    <Text key={usuario._id} size="sm">{usuario.username}</Text>
+                ))}
+            </Table.Td>
+            <Table.Td>
+                <div
+                    style={{ display: 'flex', gap: 10, flexDirection: 'column' }}
+                >
+                    <Badge color="green" fullWidth variant="light"
+                        onClick={() => { handleOpenGroupChat(); setCurrentlyOpenedGroup(grupo); }}
+                    >
+                        Abrir
+                    </Badge>
+                    <Badge color="red" fullWidth variant="light">
+                        Eliminar
+                    </Badge>
+                </div>
+            </Table.Td>
         </Table.Tr>
     ));
+
+
+
+    // Controla si el modal de nuevo grupo está abierto o cerrado
+
+    const [openedGroupChat, { close: closeOpenedGroupChat, toggle: toggleOpenedGroupChat }] = useDisclosure();
+
+    const [currentlyOpenedGroup, setCurrentlyOpenedGroup] = useState({});
+
+    // Aqui controlamos todo lo que sucede cuando se Abre un chat grupal
+
+    function handleOpenGroupChat() {
+
+        toggleOpenedGroupChat();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function handleNewGroupClick() {
 
@@ -134,9 +193,9 @@ export function CifradosGrupos({ usuarioActual }) {
     }
 
     function handleNewGroupSubmit() {
-        console.log('*Creando nuevo grupo:', newGroupName);
-        console.log('*Con contraseña:', newGroupPassword);
-        console.log('*Con los siguientes usuarios:', usuariosAgregar);
+        console.log(' [ 1 ] Creando nuevo grupo:', newGroupName);
+        console.log(' [ 2 ] Con contraseña:', newGroupPassword);
+        console.log(' [ 3 ] Con los siguientes usuarios:', usuariosAgregar);
 
         closeNewGroupModal();
     }
@@ -145,7 +204,13 @@ export function CifradosGrupos({ usuarioActual }) {
 
         <div>
 
-            <Modal opened={newGroupModalOpened} onClose={closeNewGroupModal} size="auto" title={`Creando nuevo grupo`} >
+
+
+
+            <Modal opened={newGroupModalOpened} onClose={closeNewGroupModal} size="auto" title={`Creando nuevo grupo`} overlayProps={{
+                backgroundOpacity: 0.55,
+                blur: 3,
+            }}>
 
                 <Input
                     value={newGroupName}
@@ -183,10 +248,54 @@ export function CifradosGrupos({ usuarioActual }) {
 
 
 
-            <Button
-                rightSection={<IconPlus size={14} />}
-                onClick={handleNewGroupClick}
-            >Nuevo grupo</Button>
+            <Modal opened={openedGroupChat} onClose={closeOpenedGroupChat} size="auto" title={`Chat grupal`} overlayProps={{
+                backgroundOpacity: 0.55,
+                blur: 3,
+            }}>
+
+                <div>
+                    {currentlyOpenedGroup.nombre}
+                </div>
+
+            </Modal>
+
+
+
+
+
+
+
+
+            <div className={classes.contenedorPrincipal}>
+
+                {gruposEnLosQueSePresenta.length > 0 ? (
+                    <div className={classes.contenedorTabla}>
+                        <Table>
+                            <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
+                                <Table.Tr>
+                                    <Table.Th>Nombre</Table.Th>
+                                    <Table.Th>Clave simétrica</Table.Th>
+                                    <Table.Th>Vector</Table.Th>
+                                    <Table.Th>Contraseña</Table.Th>
+                                    <Table.Th>Fecha de creación</Table.Th>
+                                    <Table.Th>Integrantes</Table.Th>
+                                    <Table.Th>Acciones</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Table.Tbody>{rowsGruposActuales}</Table.Tbody>
+                        </Table>
+                    </div>
+                ) : (
+                    <Text>No perteneces a ningún grupo actualmente.</Text>
+                )}
+
+
+                <Button
+                    rightSection={<IconPlus size={14} />}
+                    onClick={handleNewGroupClick}
+                >Nuevo grupo</Button>
+
+            </div>
 
         </div>
 
