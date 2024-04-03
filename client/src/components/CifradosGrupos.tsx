@@ -248,10 +248,17 @@ export function CifradosGrupos({ usuarioActual }) {
 
 
 
-            <Modal opened={openedGroupChat} onClose={closeOpenedGroupChat} size="auto" title={`Chat grupal`} overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
-            }}>
+            <Modal
+                opened={openedGroupChat}
+                transitionProps={{ transition: 'fade', duration: 400, timingFunction: 'linear' }}
+                onClose={closeOpenedGroupChat}
+                size="auto"
+                overlayProps={{
+                    backgroundOpacity: 0.55,
+                    blur: 3,
+                }}
+                withCloseButton={false}
+            >
 
                 <div>
                     {currentlyOpenedGroup.nombre}
@@ -293,6 +300,7 @@ export function CifradosGrupos({ usuarioActual }) {
                 <Button
                     rightSection={<IconPlus size={14} />}
                     onClick={handleNewGroupClick}
+                    color='green'
                 >Nuevo grupo</Button>
 
             </div>
