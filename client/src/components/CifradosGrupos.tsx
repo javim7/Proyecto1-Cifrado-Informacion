@@ -2,13 +2,16 @@ import cx from 'clsx';
 
 import { useState, useEffect } from 'react';
 
-import { Table, ScrollArea, Modal, Group, Button, Input, Badge, Avatar, Text } from '@mantine/core';
+import { Table, ScrollArea, Modal, Group, Button, Input, Badge, Avatar, Text, TextInput, ActionIcon, rem } from '@mantine/core';
 
 import classes from './CifradosGrupos.module.css';
 
 import { IconPlus } from '@tabler/icons-react';
 
 import { useDisclosure } from '@mantine/hooks';
+
+import { IconSearch, IconArrowRight } from '@tabler/icons-react';
+
 
 
 
@@ -168,6 +171,8 @@ export function CifradosGrupos({ usuarioActual }) {
 
     const [mensajesRetraidosGrupoActual, setMensajesRetraidosGrupoActual] = useState([]);
 
+    const [mensajeEscrito, setMensajeEscrito] = useState('')
+
     // Hacemos un fetch a http://localhost:3500/groups/get_group_by_name/:nombre_grupo para obtener el id del grupo, luego de
     // obtener el id del grupo, hacemos otro fetch a http://localhost:3500/groups/get_all_messages_by_group/ con body {"valid_group_id": id_del_grupo_obtenido_previamente}
     // para obtener todos los mensajes del grupo y guardarlos en mensajesRetraidosGrupoActual
@@ -230,6 +235,43 @@ export function CifradosGrupos({ usuarioActual }) {
         console.log(' [ 3 ] Con los siguientes usuarios:', usuariosAgregar);
 
         closeNewGroupModal();
+    }
+
+
+
+
+
+
+
+
+
+
+    // Aqui se hara la logica para enviar un mensaje a un grupo
+
+    function handleSendMessage() {
+
+        console.log(' [ 1 ] Enviando mensaje:', mensajeEscrito);
+
+        // Aqui se hara el fetch a http://localhost:3500/groups/insert_message_to_group/ con body {
+        //  "valid_group_id": "660cdbe924e20fa74a59b785", "autor": "mombius", "mensaje_cifrado": "ojala esto se cifre"}
+
+        fetch('http://localhost:3500/groups/insert_message_to_group/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                valid_group_id: currentlyOpenedGroup._id.toString(),
+                autor: usuarioActual,
+                mensaje_cifrado: mensajeEscrito
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 2 ] Mensaje enviado:', data);
+                setMensajeEscrito('');
+            });
+
     }
 
     return (
@@ -309,6 +351,24 @@ export function CifradosGrupos({ usuarioActual }) {
                             </div>
                         ))}
                     </ScrollArea>
+                    <TextInput
+                        radius="xl"
+                        size="md"
+                        placeholder="Mensaje para el grupo"
+                        rightSectionWidth={42}
+                        rightSection={
+                            <ActionIcon
+                                size={32}
+                                radius="xl"
+                                variant="filled"
+                                onClick={() => { handleSendMessage(); }}
+                            >
+                                <IconArrowRight style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
+                            </ActionIcon>
+                        }
+                        onChange={(event) => setMensajeEscrito(event.currentTarget.value)}
+                        value={mensajeEscrito}
+                    />
                 </div>
 
             </Modal>
