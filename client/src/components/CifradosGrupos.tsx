@@ -164,15 +164,47 @@ export function CifradosGrupos({ usuarioActual }) {
 
     const [currentlyOpenedGroup, setCurrentlyOpenedGroup] = useState({});
 
+    // Controlamos todos los mensajes del grupo abierto actualmente
+
+    const [mensajesRetraidosGrupoActual, setMensajesRetraidosGrupoActual] = useState([]);
+
+    // Hacemos un fetch a http://localhost:3500/groups/get_group_by_name/:nombre_grupo para obtener el id del grupo, luego de
+    // obtener el id del grupo, hacemos otro fetch a http://localhost:3500/groups/get_all_messages_by_group/ con body {"valid_group_id": id_del_grupo_obtenido_previamente}
+    // para obtener todos los mensajes del grupo y guardarlos en mensajesRetraidosGrupoActual
+    // todo esto se tiene que hacer cuando handleOpenGroupChat
+
+
     // Aqui controlamos todo lo que sucede cuando se Abre un chat grupal
 
     function handleOpenGroupChat() {
 
         toggleOpenedGroupChat();
 
+        console.log(' [ 1 ] Abriendo chat grupal:', currentlyOpenedGroup);
+
+        // Aqui retraemos todos los mensajes del grupo actual
+
+        fetch(`http://localhost:3500/groups/get_group_by_name/${currentlyOpenedGroup.nombre}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 2 ] Grupo actual:', data);
+
+                fetch('http://localhost:3500/groups/get_all_messages_by_group/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ valid_group_id: currentlyOpenedGroup._id.toString() })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(' [ 3 ] Mensajes del grupo actual:', data);
+                        setMensajesRetraidosGrupoActual(data);
+                    });
+
+            });
+
     }
-
-
 
 
 
@@ -262,6 +294,21 @@ export function CifradosGrupos({ usuarioActual }) {
 
                 <div>
                     {currentlyOpenedGroup.nombre}
+                </div>
+
+                <div>
+                    <ScrollArea h={600} offsetScrollbars scrollbarSize={2} className={classes.scrollAreaChats}>
+                        {mensajesRetraidosGrupoActual.map((chat: any) => (
+                            <div key={chat._id}
+                                className={chat.autor === usuarioActual ? classes.mensajePropio : classes.mensajeExterno}
+                            >
+                                <Text c="dimmed" size="xs">{chat.autor === usuarioActual ? 'Tu' : chat.autor}</Text>
+                                <Text>{chat.mensaje_descifrado}</Text>
+                                <Text c="dimmed" size="xs">{chat.mensaje}</Text>
+                                <Text c="dimmed" size="xs">{chat.fecha_envio}</Text>
+                            </div>
+                        ))}
+                    </ScrollArea>
                 </div>
 
             </Modal>

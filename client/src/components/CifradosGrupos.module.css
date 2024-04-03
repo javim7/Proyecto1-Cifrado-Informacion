@@ -49,3 +49,41 @@
     padding: 20px;
     /* Espacio interior para mantener el contenido dentro de los márgenes del fondo blanco */
 }
+
+.mensajeExterno {
+    background-color: #ECE5DD;
+    /* Color de fondo para mensajes de otros, similar a WhatsApp */
+    margin: 10px 50px 10px 10px;
+    /* Margen para separar los mensajes y alinearlos a la izquierda */
+    padding: 10px;
+    /* Padding para el contenido interno */
+    border-radius: 10px 10px 10px 0;
+    /* Bordes redondeados excepto en la esquina inferior izquierda */
+    max-width: 60%;
+    /* Ancho máximo para evitar que el mensaje ocupe todo el ancho */
+    word-wrap: break-word;
+    /* Asegura que el texto no salga del contenedor */
+    align-self: flex-start;
+    /* Alinea los mensajes al inicio (izquierda) del contenedor flex */
+    margin-right: auto;
+    /* Fuerza alineación a la izquierda */
+}
+
+.mensajePropio {
+    background-color: #DCF8C6;
+    /* Color de fondo para tus propios mensajes, similar a WhatsApp */
+    margin: 10px 10px 10px 50px;
+    /* Margen para separar los mensajes y alinearlos a la derecha */
+    padding: 10px;
+    /* Padding para el contenido interno */
+    border-radius: 10px 10px 0 10px;
+    /* Bordes redondeados excepto en la esquina inferior derecha */
+    max-width: 60%;
+    /* Ancho máximo para evitar que el mensaje ocupe todo el ancho */
+    word-wrap: break-word;
+    /* Asegura que el texto no salga del contenedor */
+    align-self: flex-end;
+    /* Alinea tus propios mensajes al final (derecha) del contenedor flex */
+    margin-left: auto;
+    /* Fuerza alineación a la derecha */
+}

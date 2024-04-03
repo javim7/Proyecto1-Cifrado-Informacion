@@ -17,8 +17,8 @@ class AESCipher:
         """
         Inicializa una nueva instancia de AESCipher, generando una clave AES-128 y un IV.
         """
-        self.key = get_random_bytes(16)  # Clave AES-128 (16 bytes = 128 bits)
-        self.iv = get_random_bytes(AES.block_size)  # Vector de inicialización para el modo CBC
+        self.key = key
+        self.iv = iv
 
     def encrypt(self, data):
         """
