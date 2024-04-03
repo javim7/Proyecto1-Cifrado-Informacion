@@ -41,9 +41,8 @@ router.get('/:username/key', async (req, res) => {
         }
 
         const publicKey = user.public_key;
-        const publicKeyBase64 = Buffer.from(publicKey).toString('base64');
 
-        res.status(200).json({ publicKeyBase64 });
+        res.status(200).json(publicKey);
     } catch (error) {
         console.error('Error retrieving user key:', error);
         res.status(500).json({ error: 'Error interno del servidor' });

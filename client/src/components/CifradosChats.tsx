@@ -6,7 +6,8 @@ import { useState, useEffect, } from 'react';
 
 import { useDisclosure } from '@mantine/hooks';
 
-import { TextInput, TextInputProps, ActionIcon, useMantineTheme, rem } from '@mantine/core';
+import { TextInput, TextInputProps, ActionIcon, useMantineTheme, rem, Button } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 
 import { ScrollArea } from '@mantine/core';
@@ -20,6 +21,8 @@ export function CifradosChats({ usuarioActual }) {
 
     const [usuariosConChats, setUsuariosConChats] = useState([]);
 
+    const [newChatModalOpened, { close: closeNewChatModal, toggle: toggleNewChatModal }] = useDisclosure();
+
     const [opened, { close, open }] = useDisclosure(false);
 
     const [chatDestino, setChatDestino] = useState('');
@@ -27,6 +30,35 @@ export function CifradosChats({ usuarioActual }) {
     const [todos_los_chats_con_usuario, setTodosLosChatsConUsuario] = useState([])
 
     const [mensajeEscrito, setMensajeEscrito] = useState('')
+
+    const [posiblesChatDestino, setPosiblesChatDestino] = useState([])
+
+    // useEffect que llame al endpoint para retraer a todos los usuarios y que los agregue a posiblesChatDestino omitiendo al usuario actual
+    //endpoint = http://localhost:3000/users/
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/users/`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Usuarios:', data);
+
+                const formattedData = data.map(user => ({
+
+                    ...user,
+                    avatar: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png', // Imagen predeterminada
+                    role: 'Estudiante', 
+                    memberSince: user.date_created, // Asume que quieres mostrar la fecha de creación como última actividad
+                    active: true, 
+                }));
+
+                setPosiblesChatDestino(formattedData);
+                console.log('Usuarios con chats:', formattedData);
+            })
+            .catch((error) => {
+                console.error('Error al obtener los chats del usuario actual:', error);
+            });
+    }, [newChatModalOpened]); 
+
 
     function handleSendMessage() {
 
@@ -155,6 +187,15 @@ export function CifradosChats({ usuarioActual }) {
 
     }
 
+    function handleNewChatClick() {
+        console.log("Nuevo chat")
+        toggleNewChatModal();
+    }
+
+    function handleChatSubmit() {
+        console.log("Chat submit")
+        console.log("se abrira un chat con:", chatDestino)
+    }
     useEffect(() => {
         fetch(`http://localhost:3000/messages/all_chats/${usuarioActual}`)
             .then((response) => response.json())
@@ -211,6 +252,31 @@ export function CifradosChats({ usuarioActual }) {
 
     return (
         <div className={classes.contenedorGeneral}>
+            <Modal opened={newChatModalOpened} onClose={closeNewChatModal} size="auto" title={`Creando nuevo chat`} overlayProps={{
+                backgroundOpacity: 0.55,
+                blur: 3,
+            }}>
+
+                
+
+                <div className={classes.contenedorModal}>
+                    <div>Selecciona el usuario con el que deseas iniciar un chat</div>
+                    <Select
+                        data={posiblesChatDestino.map((user) => ({ value: user.username, label: user.username }))}
+                        placeholder="Selecciona un usuario"
+                        searchable
+                        clearable
+                        onChange={(event) => setChatDestino(event)}
+                    />
+                    <Button
+                        rightSection={<IconPlus size={14} />}
+                        onClick={() => {handleChatOpen(chatDestino); closeNewChatModal();}}
+                    >Nuevo chat</Button>
+                </div>
+
+
+            </Modal>
+
             <Modal opened={opened} onClose={close} size="auto" title={`Chat con ${chatDestino}`} >
                 <div className={classes.contenedorModal}>
                     <div>Contenido del chat con {chatDestino}</div>
@@ -246,6 +312,11 @@ export function CifradosChats({ usuarioActual }) {
                     />
                 </div>
             </Modal>
+            
+            <Button
+                    rightSection={<IconPlus size={14} />}
+                    onClick={handleNewChatClick}
+                >Nuevo chat</Button>
             <div
                 className={classes.contenedorTabla}
             >

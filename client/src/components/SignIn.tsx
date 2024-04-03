@@ -27,7 +27,7 @@ export function CifradosSignIn({ setUsuarioActual }: { setUsuarioActual: (tabNam
     function handleLogin() {
 
         console.log(nombre_usuario);
-
+        let textoPrueba = "hola"
         let crypt = new JSEncrypt({ default_key_size: "512" });
 
         let privateKey = crypt.getPrivateKey();
@@ -45,6 +45,22 @@ export function CifradosSignIn({ setUsuarioActual }: { setUsuarioActual: (tabNam
 
         let converted_publicKey: string = atob(base64PublicKey);
         let converted_privateKey: string = atob(base64PrivateKey)
+
+        // Create a new JSEncrypt instance for encryption
+        let encryptor = new JSEncrypt();
+        encryptor.setPublicKey(converted_publicKey);
+
+        // Encrypt the message
+        let encryptedMessage = encryptor.encrypt(textoPrueba);
+        console.log('Encrypted Message:', encryptedMessage);
+
+        // Create a new JSEncrypt instance for decryption
+        let decryptor = new JSEncrypt();
+        decryptor.setPrivateKey(converted_privateKey);
+
+        // Decrypt the message
+        let decryptedMessage = decryptor.decrypt(encryptedMessage);
+        console.log('Decrypted Message:', decryptedMessage);
 
         console.log('Converted Public Key:', converted_publicKey);
         console.log('Converted Private Key:', converted_privateKey);
