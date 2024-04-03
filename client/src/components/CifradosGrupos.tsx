@@ -1,7 +1,17 @@
 import cx from 'clsx';
-import { useState } from 'react';
-import { Table, ScrollArea } from '@mantine/core';
+
+import { useState, useEffect } from 'react';
+
+import { Table, ScrollArea, Modal, Group, Button, Input, Badge, Avatar, Text } from '@mantine/core';
+
 import classes from './CifradosGrupos.module.css';
+
+import { IconPlus } from '@tabler/icons-react';
+
+import { useDisclosure } from '@mantine/hooks';
+
+
+
 
 const data = [
     {
@@ -13,153 +23,103 @@ const data = [
         name: 'Deangelo Runolfsson',
         company: 'Greenfelder - Krajcik',
         email: 'Kadin_Trantow87@yahoo.com',
-    },
-    {
-        name: 'Danny Carter',
-        company: 'Kohler and Sons',
-        email: 'Marina3@hotmail.com',
-    },
-    {
-        name: 'Trace Tremblay PhD',
-        company: 'Crona, Aufderhar and Senger',
-        email: 'Antonina.Pouros@yahoo.com',
-    },
-    {
-        name: 'Derek Dibbert',
-        company: 'Gottlieb LLC',
-        email: 'Abagail29@hotmail.com',
-    },
-    {
-        name: 'Viola Bernhard',
-        company: 'Funk, Rohan and Kreiger',
-        email: 'Jamie23@hotmail.com',
-    },
-    {
-        name: 'Austin Jacobi',
-        company: 'Botsford - Corwin',
-        email: 'Genesis42@yahoo.com',
-    },
-    {
-        name: 'Hershel Mosciski',
-        company: 'Okuneva, Farrell and Kilback',
-        email: 'Idella.Stehr28@yahoo.com',
-    },
-    {
-        name: 'Mylene Ebert',
-        company: 'Kirlin and Sons',
-        email: 'Hildegard17@hotmail.com',
-    },
-    {
-        name: 'Lou Trantow',
-        company: 'Parisian - Lemke',
-        email: 'Hillard.Barrows1@hotmail.com',
-    },
-    {
-        name: 'Dariana Weimann',
-        company: 'Schowalter - Donnelly',
-        email: 'Colleen80@gmail.com',
-    },
-    {
-        name: 'Dr. Christy Herman',
-        company: 'VonRueden - Labadie',
-        email: 'Lilyan98@gmail.com',
-    },
-    {
-        name: 'Katelin Schuster',
-        company: 'Jacobson - Smitham',
-        email: 'Erich_Brekke76@gmail.com',
-    },
-    {
-        name: 'Melyna Macejkovic',
-        company: 'Schuster LLC',
-        email: 'Kylee4@yahoo.com',
-    },
-    {
-        name: 'Pinkie Rice',
-        company: 'Wolf, Trantow and Zulauf',
-        email: 'Fiona.Kutch@hotmail.com',
-    },
-    {
-        name: 'Brain Kreiger',
-        company: 'Lueilwitz Group',
-        email: 'Rico98@hotmail.com',
-    },
-    {
-        name: 'Myrtice McGlynn',
-        company: 'Feest, Beahan and Johnston',
-        email: 'Julius_Tremblay29@hotmail.com',
-    },
-    {
-        name: 'Chester Carter PhD',
-        company: 'Gaylord - Labadie',
-        email: 'Jensen_McKenzie@hotmail.com',
-    },
-    {
-        name: 'Mrs. Ericka Bahringer',
-        company: 'Conn and Sons',
-        email: 'Lisandro56@hotmail.com',
-    },
-    {
-        name: 'Korbin Buckridge Sr.',
-        company: 'Mraz, Rolfson and Predovic',
-        email: 'Leatha9@yahoo.com',
-    },
-    {
-        name: 'Dr. Daisy Becker',
-        company: 'Carter - Mueller',
-        email: 'Keaton_Sanford27@gmail.com',
-    },
-    {
-        name: 'Derrick Buckridge Sr.',
-        company: "O'Reilly LLC",
-        email: 'Kay83@yahoo.com',
-    },
-    {
-        name: 'Ernie Hickle',
-        company: "Terry, O'Reilly and Farrell",
-        email: 'Americo.Leffler89@gmail.com',
-    },
-    {
-        name: 'Jewell Littel',
-        company: "O'Connell Group",
-        email: 'Hester.Hettinger9@hotmail.com',
-    },
-    {
-        name: 'Cyrus Howell',
-        company: 'Windler, Yost and Fadel',
-        email: 'Rick0@gmail.com',
-    },
-    {
-        name: 'Dr. Orie Jast',
-        company: 'Hilll - Pacocha',
-        email: 'Anna56@hotmail.com',
-    },
-    {
-        name: 'Luisa Murphy',
-        company: 'Turner and Sons',
-        email: 'Christine32@yahoo.com',
-    },
-    {
-        name: 'Lea Witting',
-        company: 'Hodkiewicz Inc',
-        email: 'Ford_Kovacek4@yahoo.com',
-    },
-    {
-        name: 'Kelli Runolfsson',
-        company: "Feest - O'Hara",
-        email: 'Dimitri87@yahoo.com',
-    },
-    {
-        name: 'Brook Gaylord',
-        company: 'Conn, Huel and Nader',
-        email: 'Immanuel77@gmail.com',
-    },
+    }
 ];
 
-export function CifradosGrupos() {
+export function CifradosGrupos({ usuarioActual }) {
+
     const [scrolled, setScrolled] = useState(false);
 
-    const rows = data.map((row) => (
+
+    // Variables que controlan la creacion de un nuevo grupo
+
+    // Controla si el modal de nuevo grupo está abierto o cerrado
+
+    const [newGroupModalOpened, { close: closeNewGroupModal, toggle: toggleNewGroupModal }] = useDisclosure();
+
+    // Controla el nombre del nuevo grupo
+
+    const [newGroupName, setNewGroupName] = useState('');
+
+    // Controla la contraseña del nuevo grupo
+
+    const [newGroupPassword, setNewGroupPassword] = useState('');
+
+    // Retraemos todos los posibles usuarios que pueden agregar al grupo
+
+    const [posiblesUsuariosAgregar, setPosiblesUsuariosAgregar] = useState([]);
+
+    // Tenemos una lista de todos los usuarios que la persona quiere agregar al grupo
+
+    const [usuariosAgregar, setUsuariosAgregar] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/users/`)
+            .then((response) => response.json())
+            .then((data) => {
+                // Transforma los datos si es necesario antes de establecer el estado
+                const formattedData = data.map(user => ({
+                    ...user,
+                    avatar: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png', // Imagen predeterminada
+                    role: 'Estudiante', // Ejemplo de cómo asignar roles, ajusta según necesidad
+                    memberSince: user.date_created, // Asume que quieres mostrar la fecha de creación como última actividad
+                    active: true, // Decide cómo determinar si el usuario está activo
+                }));
+
+                console.log('Usuarios retraidos:', formattedData);
+
+                setPosiblesUsuariosAgregar(formattedData);
+
+                // Agregamos el usuario actual a la lista de usuarios a agregar
+
+                setUsuariosAgregar([usuarioActual]);
+
+                // Lo quitamos de la lista de posibles usuarios a agregar
+
+                setPosiblesUsuariosAgregar(posiblesUsuariosAgregar.filter((item) => item.username !== usuarioActual));
+
+                console.log('Usuarios a agregar:', usuariosAgregar);
+            })
+            .catch((error) => {
+                console.error('Error al obtener los chats del usuario actual:', error);
+            });
+    }, [usuarioActual]); // Asegúrate de incluir las dependencias correctas aquí
+
+    const rowsUsuariosParaAgregar = posiblesUsuariosAgregar.map((item) => (
+        <Table.Tr key={item._id}>
+            <Table.Td>
+                <Group gap="sm">
+                    <Avatar size={40} src={item.avatar} radius={40} />
+                    <div>
+                        <Text size="sm" weight={500}>
+                            {item.username}
+                        </Text>
+                    </div>
+                </Group>
+            </Table.Td>
+
+            <Table.Td>
+
+                <Badge
+                    fullWidth variant="light"
+                    onClick={() => {
+                        console.log('Agregando usuario:', item.username);
+                        // setUsuariosAgregar([...usuariosAgregar, item]);
+                        // Agregamos solamente el nombre de usuario
+                        setUsuariosAgregar([...usuariosAgregar, item.username]);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                >
+                    Agregar
+                </Badge>
+
+            </Table.Td>
+        </Table.Tr>
+    ));
+
+
+
+    const rowsGrupos = data.map((row) => (
         <Table.Tr key={row.name}>
             <Table.Td>{row.name}</Table.Td>
             <Table.Td>{row.email}</Table.Td>
@@ -167,18 +127,69 @@ export function CifradosGrupos() {
         </Table.Tr>
     ));
 
+    function handleNewGroupClick() {
+
+        toggleNewGroupModal();
+
+    }
+
+    function handleNewGroupSubmit() {
+        console.log('*Creando nuevo grupo:', newGroupName);
+        console.log('*Con contraseña:', newGroupPassword);
+        console.log('*Con los siguientes usuarios:', usuariosAgregar);
+
+        closeNewGroupModal();
+    }
+
     return (
-        <ScrollArea h={300} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-            <Table miw={700}>
-                <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
-                    <Table.Tr>
-                        <Table.Th>Name</Table.Th>
-                        <Table.Th>Email</Table.Th>
-                        <Table.Th>Company</Table.Th>
-                    </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>{rows}</Table.Tbody>
-            </Table>
-        </ScrollArea>
+
+        <div>
+
+            <Modal opened={newGroupModalOpened} onClose={closeNewGroupModal} size="auto" title={`Creando nuevo grupo`} >
+
+                <Input
+                    value={newGroupName}
+                    onChange={(event) => setNewGroupName(event.currentTarget.value)}
+                    placeholder="Nombre del grupo"
+                />
+
+                <Input
+                    value={newGroupPassword}
+                    onChange={(event) => setNewGroupPassword(event.currentTarget.value)}
+                    placeholder="Contraseña del grupo"
+                />
+
+                <div>
+
+                    <ScrollArea h={300} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
+                        <Table miw={700}>
+                            <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
+                                <Table.Tr>
+                                    <Table.Th>Name</Table.Th>
+                                    <Table.Th>Agregar</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Table.Tbody>{rowsUsuariosParaAgregar}</Table.Tbody>
+                        </Table>
+                    </ScrollArea>
+
+
+                </div>
+
+                <Button onClick={handleNewGroupSubmit}>Crear grupo</Button>
+
+
+            </Modal>
+
+
+
+            <Button
+                rightSection={<IconPlus size={14} />}
+                onClick={handleNewGroupClick}
+            >Nuevo grupo</Button>
+
+        </div>
+
+
     );
 }

@@ -37,7 +37,7 @@ function App() {
       case 'Chats':
         return <CifradosChats usuarioActual={usuario_actual} />;
       case 'Grupos':
-        return <CifradosGrupos />;
+        return <CifradosGrupos usuarioActual={usuario_actual} />;
       case 'Usuarios':
         return <Usuarios />;
       case 'Llaves':
