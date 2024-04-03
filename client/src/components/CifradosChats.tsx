@@ -196,6 +196,7 @@ export function CifradosChats({ usuarioActual }) {
                     <Badge
                         fullWidth variant="light"
                         onClick={() => handleChatOpen(item.username)}
+                        style={{ cursor: 'pointer' }}
                     >
                         Abrir
                     </Badge>
