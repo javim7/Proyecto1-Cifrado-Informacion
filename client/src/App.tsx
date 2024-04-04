@@ -16,6 +16,7 @@ import { Usuarios } from "./components/Usuarios";
 import { CifradosSignIn } from "./components/SignIn"
 import { CifradosChats } from "./components/CifradosChats";
 import { CifradosLLaves } from "./components/CifradosLlaves";
+import { CifradosBasesDeDatos } from "./components/CifradosBasesDeDatos";
 
 
 
@@ -43,7 +44,7 @@ function App() {
       case 'Llaves':
         return <CifradosLLaves usuarioActual={usuario_actual} />;
       case 'Base de datos':
-        return <div>Contenido de Base de datos</div>;
+        return <CifradosBasesDeDatos />;
       case 'Configuracion':
         return <div>Contenido de Configuracion</div>;
       default:
