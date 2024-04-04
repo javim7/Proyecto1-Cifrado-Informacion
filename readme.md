@@ -65,6 +65,69 @@ Endpoints:
 
 Para cada uno de estos endpoints, se espera cierta información en la solicitud (como parámetros en la URL, datos en el cuerpo de la solicitud para POST y PATCH, etc.) y devuelven datos en formato JSON junto con códigos de estado HTTP apropiados que indican el resultado de la solicitud.
 
+# API Endpoints Documentation
+
+## List Collections
+
+- **Endpoint:** `/list_collections`
+- **Method:** `GET`
+- **Description:** Enumera todas las colecciones disponibles en la base de datos.
+
+## List All Entries in Collection
+
+- **Endpoint:** `/list_all_entries_in_collection/<collection_name>`
+- **Method:** `GET`
+- **Description:** Lista todas las entradas dentro de una colección específica, indicada por `<collection_name>`.
+
+## Get All Groups
+
+- **Endpoint:** `/groups/get_all_groups/`
+- **Method:** `GET`
+- **Description:** Obtiene todos los grupos disponibles.
+
+## Get All Groups by User
+
+- **Endpoint:** `/groups/get_all_groups_by_user/<username>`
+- **Method:** `GET`
+- **Description:** Recupera todos los grupos asociados a un usuario específico, identificado por `<username>`.
+
+## Create New Group
+
+- **Endpoint:** `/groups/create_new_group/`
+- **Method:** `POST`
+- **Description:** Crea un nuevo grupo con los datos proporcionados en el cuerpo de la petición.
+
+## Get Group by Name
+
+- **Endpoint:** `/groups/get_group_by_name/<group_name>`
+- **Method:** `GET`
+- **Description:** Busca y devuelve información sobre un grupo específico, identificado por `<group_name>`.
+
+## Insert Message to Group
+
+- **Endpoint:** `/groups/insert_message_to_group/`
+- **Method:** `POST`
+- **Description:** Inserta un mensaje en un grupo específico, con los detalles proporcionados en el cuerpo de la petición.
+
+## Get All Messages by Group
+
+- **Endpoint:** `/groups/get_all_messages_by_group/`
+- **Method:** `POST`
+- **Description:** Recupera todos los mensajes de un grupo específico, identificado en el cuerpo de la petición.
+
+## Delete Group by Name
+
+- **Endpoint:** `/groups/delete_group_by_name/`
+- **Method:** `POST`
+- **Description:** Elimina un grupo específico, identificado en el cuerpo de la petición.
+
+## Update User Private and Public Key
+
+- **Endpoint:** `/users/update_user_private_and_public_key/`
+- **Method:** `PUT`
+- **Description:** Actualiza las claves privada y pública de un usuario, con los detalles proporcionados en el cuerpo de la petición.
+
+
 ### Manejo de Llaves y Cifrado
 
 #### Creación de Usuarios
