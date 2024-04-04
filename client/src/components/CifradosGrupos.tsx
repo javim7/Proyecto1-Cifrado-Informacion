@@ -227,12 +227,45 @@ export function CifradosGrupos({ usuarioActual }) {
 
         toggleNewGroupModal();
 
+        // Retraemos y almacenamos en la variable posiblesUsuariosAgregar todos los usuarios 
+        // retraemos del endpoint http://localhost:3500/list_all_entries_in_collection/users
+
+        fetch('http://localhost:3500/list_all_entries_in_collection/users')
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 2 ] Posibles usuarios para agregar:', data);
+                setPosiblesUsuariosAgregar(data);
+            });
+
     }
 
     function handleNewGroupSubmit() {
         console.log(' [ 1 ] Creando nuevo grupo:', newGroupName);
         console.log(' [ 2 ] Con contraseña:', newGroupPassword);
         console.log(' [ 3 ] Con los siguientes usuarios:', usuariosAgregar);
+
+        // Enviamos a http://localhost:3500/groups/create_new_group/ para crear un nuevo grupo
+        // Body: {
+        //     "nombre": "group_name",
+        //         "usuarios": ["user1", "user2", "user3"],
+        //             "contraseña": "designated password"
+        // }
+
+        fetch('http://localhost:3500/groups/create_new_group/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nombre: newGroupName,
+                usuarios: usuariosAgregar,
+                contraseña: newGroupPassword
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 4 ] Nuevo grupo creado:', data);
+            });
 
         closeNewGroupModal();
     }
@@ -277,9 +310,6 @@ export function CifradosGrupos({ usuarioActual }) {
     return (
 
         <div>
-
-
-
 
             <Modal opened={newGroupModalOpened} onClose={closeNewGroupModal} size="auto" title={`Creando nuevo grupo`} overlayProps={{
                 backgroundOpacity: 0.55,
