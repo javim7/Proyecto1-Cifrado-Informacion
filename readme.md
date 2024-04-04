@@ -20,6 +20,41 @@ El backend recibe las llaves públicas de los usuarios durante el proceso de reg
 
 En la base de datos se almacenan las llaves públicas de los usuarios en una tabla llamada `usuarios`, mientras que las llaves privadas se almacenan en una tabla separada llamada `llaves`. Además, los mensajes de chats privados se almacenan ya cifrados en la tabla de `messages`, mientras que los mensajes grupales se almacenan ya cifrados en la tabla de `group_messages`.
 
+#### Endpoints
+
+#### group_messages.js
+Endpoints:
+GET /messages/groups/:id: Obtiene todos los mensajes de un grupo específico por su ID.
+POST /messages/groups/:nombre: Crea un mensaje en un grupo específico por el nombre del grupo.
+#### groups.js
+Endpoints:
+GET /groups: Obtiene todos los grupos.
+POST /groups: Crea un nuevo grupo.
+PATCH /groups/:id: Actualiza un grupo añadiendo un usuario por el ID del grupo.
+DELETE /groups/:nombre: Elimina un grupo específico por su nombre.
+#### messages.js
+Endpoints:
+GET /messages/users/:username_origen/:username_destino: Obtiene todos los mensajes entre dos usuarios.
+GET /messages/all_chats/:username: Obtiene todos los usuarios con los que se ha tenido una conversación.
+POST /messages/:username_destino: Envia un mensaje a un usuario destino.
+#### users.js
+Endpoints:
+GET /users: Obtiene todos los usuarios.
+GET /users/:username: Obtiene un usuario específico por su nombre de usuario.
+GET /users/:username/key: Obtiene la llave pública del usuario en base 64 por su nombre de usuario.
+POST /users: Crea un nuevo usuario.
+PATCH /users/:username: Actualiza la llave pública de un usuario.
+DELETE /users/:username: Elimina un usuario por su nombre de usuario.
+DELETE /users/key/:username: Elimina la llave de un usuario por su nombre de usuario.
+#### keys.js
+Endpoints:
+GET /keys/:username: Obtiene la llave privada de un usuario.
+POST /keys: Coloca la llave privada en la tabla keys si el usuario existe.
+GET /keys/key_pair/:username: Obtiene tanto la llave privada como la llave pública de un usuario.
+GET /keys/private_key/:username: Obtiene la llave privada de un usuario.
+GET /keys/public_key/:username: Obtiene la llave pública de un usuario.
+Para cada uno de estos endpoints, se espera cierta información en la solicitud (como parámetros en la URL, datos en el cuerpo de la solicitud para POST y PATCH, etc.) y devuelven datos en formato JSON junto con códigos de estado HTTP apropiados que indican el resultado de la solicitud.
+
 ### Manejo de Llaves y Cifrado
 
 #### Creación de Usuarios
