@@ -69,7 +69,7 @@ function App() {
               overflowX: 'hidden',
             }}
           >
-            <CifradosNavbar onTabChange={handleTabChange} setUsuarioActual={setUsuarioActual} />
+            <CifradosNavbar onTabChange={handleTabChange} setUsuarioActual={setUsuarioActual} usuarioActual={usuario_actual} />
             {renderContent()}
           </div>
         }

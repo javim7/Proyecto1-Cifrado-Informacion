@@ -17,11 +17,10 @@ const data = [
     { link: '', label: 'Grupos', icon: IconUsersGroup },
     { link: '', label: 'Usuarios', icon: IconUsers },
     { link: '', label: 'Llaves', icon: IconKey },
-    { link: '', label: 'Base de datos', icon: IconDatabaseImport },
-    { link: '', label: 'Configuracion', icon: IconSettings },
+    { link: '', label: 'Base de datos', icon: IconDatabaseImport }
 ];
 
-export default function CifradosNavbar({ onTabChange, setUsuarioActual }: { onTabChange: (tabName: string) => void; setUsuarioActual: (tabName: string) => void; }) {
+export default function CifradosNavbar({ onTabChange, setUsuarioActual, usuarioActual }: { onTabChange: (tabName: string) => void; setUsuarioActual: (tabName: string) => void; usuarioActual: string; }) {
     const [active, setActive] = useState('');
 
     const links = data.map((item) => (
@@ -47,7 +46,7 @@ export default function CifradosNavbar({ onTabChange, setUsuarioActual }: { onTa
                 <Group className={classes.header} justify="space-between">
                     <div className='grupo_logo_descripcion'>
                         <Code fw={700} className={classes.version}>
-                            Grupo 3
+                            Grupo 3 - {usuarioActual}
                         </Code>
                     </div>
                 </Group>
