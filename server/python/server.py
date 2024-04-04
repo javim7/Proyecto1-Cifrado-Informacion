@@ -335,6 +335,37 @@ def get_all_messages_by_group():
     except Exception as e:
         # Retornamos un código de error 500
         return jsonify({'error': str(e)}), 500
+    
+
+"""
+/groups/delete_group_by_name/
+[ POST ] This endpoint deletes the specified group in the database, specifically in the 'groups' collection, by the group name if the password in the body equals the password of the group.
+Usage: http://localhost:3500/groups/delete_group_by_name/
+Body: {
+    "nombre": "group_name",
+    "contraseña": "designated password"
+}
+"""
+@app.route('/groups/delete_group_by_name/', methods=['POST'])
+def delete_group_by_name():
+    try:
+        data = request.json
+
+        group_db = db['groups']
+
+        group = group_db.find_one({"nombre": data["nombre"]})
+
+        if group:
+            if group["contraseña"] == data["contraseña"]:
+                result = group_db.delete_one({"nombre": data["nombre"]})
+                return jsonify({'deleted_count': result.deleted_count})
+            else:
+                return jsonify({'error': 'Invalid password'}), 403
+        else:
+            return jsonify({'error': 'Group not found'}), 404
+    except Exception as e:
+        # Retornamos un código de error 500
+        return jsonify({'error': str(e)}), 500
 
 
 

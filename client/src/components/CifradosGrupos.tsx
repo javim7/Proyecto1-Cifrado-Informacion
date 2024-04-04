@@ -151,7 +151,9 @@ export function CifradosGrupos({ usuarioActual }) {
                     >
                         Abrir
                     </Badge>
-                    <Badge color="red" fullWidth variant="light">
+                    <Badge color="red" fullWidth variant="light"
+                        onClick={() => { toggleDeleteGroupModal(); setCurrentlyGroupWantingToDelete(grupo.nombre); }}
+                    >
                         Eliminar
                     </Badge>
                 </div>
@@ -307,9 +309,70 @@ export function CifradosGrupos({ usuarioActual }) {
 
     }
 
+
+
+
+
+    // TODA LA LOGICA PARA ELIMINAR UN GRUPO --------------------------------------------
+
+    const [deleteGroupModal, { close: closeDeleteGroupModal, toggle: toggleDeleteGroupModal }] = useDisclosure();
+
+    const [currentlyGroupWantingToDelete, setCurrentlyGroupWantingToDelete] = useState("");
+
+    const [contrasenaIngresadaParaEliminarGrupo, setContrasenaIngresadaParaEliminarGrupo] = useState('');
+
+    function handleDeleteGroup() {
+
+        console.log(' [ 1 ] Eliminando grupo:', currentlyGroupWantingToDelete);
+
+        // Aqui se hara el fetch a http://localhost:3500/groups/delete_group/ con body {
+        //  "nombre": "group_name", "contraseña": "designated password"}
+
+        fetch('http://localhost:3500/groups/delete_group_by_name/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nombre: currentlyGroupWantingToDelete,
+                contraseña: contrasenaIngresadaParaEliminarGrupo
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(' [ 2 ] Grupo eliminado:', data);
+                alert("Repuesta del servidor: " + data.error || "Grupo eliminado correctamente.");
+            });
+
+        closeDeleteGroupModal();
+    }
+
     return (
 
         <div>
+
+            <Modal opened={deleteGroupModal} onClose={closeDeleteGroupModal} size="auto" title={`Eliminando grupo ${currentlyGroupWantingToDelete}`}
+                overlayProps={{
+                    backgroundOpacity: 0.55,
+                    blur: 3,
+                }}>
+
+                <Input
+                    value={contrasenaIngresadaParaEliminarGrupo}
+                    onChange={(event) => setContrasenaIngresadaParaEliminarGrupo(event.currentTarget.value)}
+                    placeholder="Contraseña para eliminar el grupo"
+                />
+
+
+                <Button
+                    onClick={
+                        handleDeleteGroup
+                    }
+                    color='red'
+                >Eliminar grupo</Button>
+
+
+            </Modal>
 
             <Modal opened={newGroupModalOpened} onClose={closeNewGroupModal} size="auto" title={`Creando nuevo grupo`} overlayProps={{
                 backgroundOpacity: 0.55,
