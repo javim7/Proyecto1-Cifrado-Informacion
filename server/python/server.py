@@ -370,6 +370,73 @@ def delete_group_by_name():
 
 
 
+"""
+/users/update_user_private_and_public_key/
+[ PUT ] This endpoint updates the private and public key of the specified user in the database, 
+specifically in the 'users' collection we update their public key and in the keys collection we update their private key.
+Usage: http://localhost:3500/users/update_user_private_and_public_key/
+Body: {
+    "username": "username"
+    "base64_public_key": "public_key"
+    "base64_private_key": "private_key"
+}
+
+users collection example:
+{
+  "_id": {
+    "$oid": "660b3f7912ccac45b627cd6d"
+  },
+  "public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZ3d0RRWUpLb1pJaHZjTkFRRUJCUUFEU3dBd1NBSkJBS3FOUVhyM2pOL0FyZ0NubkYyYTdaUkROOGlpNVVEOApMVWJtcnNZZFQ2OGVkTitZMWttUVY0MlFmZHJBUkdycE9XVVpFNDNhd242c2RCVmwyeDhkUXdzQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==",
+  "username": "mombius",
+  "date_created": {
+    "$date": "2024-04-01T23:12:57.488Z"
+  },
+  "__v": 0
+}
+
+keys collection example:
+{
+  "_id": {
+    "$oid": "660b3f7912ccac45b627cd70"
+  },
+  "username": "mombius",
+  "private_key": "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlCT3dJQkFBSkJBS3FOUVhyM2pOL0FyZ0NubkYyYTdaUkROOGlpNVVEOExVYm1yc1lkVDY4ZWROK1kxa21RClY0MlFmZHJBUkdycE9XVVpFNDNhd242c2RCVmwyeDhkUXdzQ0F3RUFBUUpCQUtWbmZ6VEp0bGNlWCtLRXEzSmcKbWI3cmZjTllyK3ZaWmZQWUwzSTE1UnpZV2tkSUNNc2tTTENNN0JIc0QxbzNXWVU1T216TGE0bnpZZ1Y2d0FFSgpFaGtDSVFENC8wVUpoSldrYzMxYjRtb3NCMjlJUFpIUk4wd2s4ZDFMbU1YVkVvQlEzUUloQUs5Wk1lZnhxYks1ClVsUmw3bE8vbmM1aWNIV2RoK0FxNXlPMjZGa2FOL0VIQWlBTHpmWlU3QzgzKzYydXhINHFGalFsWlozYklGY0EKeldLamFkdS9MVUJlRlFJZ0xGeGdaOUdYb1FPSmRKaWxCc0wvWldzNkVFZGVUTFFON2Rja1NRWjlDSmtDSVFDQQpmaEFLemFFMFRNUXJBZVpNeE9jTDZtSUZENC9XVXA3ZG9RdklEZEJNdEE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQ==",
+  "createdAt": {
+    "$date": "2024-04-01T23:12:57.636Z"
+  },
+  "updatedAt": {
+    "$date": "2024-04-01T23:12:57.636Z"
+  },
+  "__v": 0
+}
+"""
+
+@app.route('/users/update_user_private_and_public_key/', methods=['PUT'])
+def update_user_private_and_public_key():
+    try:
+        data = request.json
+
+        print(json.dumps(data, indent=4))
+
+        user_db = db['users']
+        keys_db = db['keys']
+
+        user = user_db.find_one({"username": data["username"]})
+        keys = keys_db.find_one({"username": data["username"]})
+
+        if user and keys:
+            user_db.update_one({"username": data["username"]}, {"$set": {"public_key": data["base64_public_key"]}})
+            keys_db.update_one({"username": data["username"]}, {"$set": {"private_key": data["base64_private_key"]}})
+            return jsonify({'message': 'Keys updated successfully'})
+        else:
+            return jsonify({'error': 'User not found'}), 404
+    except Exception as e:
+        # Retornamos un código de error 500
+        return jsonify({'error': str(e)}), 500
+    
+
+
+
 
 
 
