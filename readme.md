@@ -20,108 +20,116 @@ El backend recibe las llaves públicas de los usuarios durante el proceso de reg
 
 En la base de datos se almacenan las llaves públicas de los usuarios en una tabla llamada `usuarios`, mientras que las llaves privadas se almacenan en una tabla separada llamada `llaves`. Además, los mensajes de chats privados se almacenan ya cifrados en la tabla de `messages`, mientras que los mensajes grupales se almacenan ya cifrados en la tabla de `group_messages`.
 
-### Endpoints
+### Endpoints JS Server
 
 #### group_messages.js
 Endpoints:
 
-GET /messages/groups/:id: Obtiene todos los mensajes de un grupo específico por su ID.
-POST /messages/groups/:nombre: Crea un mensaje en un grupo específico por el nombre del grupo.
+- GET `/messages/groups/:id`: Obtiene todos los mensajes de un grupo específico por su ID.
+- POST `/messages/groups/:nombre`: Crea un mensaje en un grupo específico por el nombre del grupo.
 
 #### groups.js
-
 Endpoints:
-GET /groups: Obtiene todos los grupos.
-POST /groups: Crea un nuevo grupo.
-PATCH /groups/:id: Actualiza un grupo añadiendo un usuario por el ID del grupo.
-DELETE /groups/:nombre: Elimina un grupo específico por su nombre.
+
+- GET `/groups`: Obtiene todos los grupos.
+- POST `/groups`: Crea un nuevo grupo.
+- PATCH `/groups/:id`: Actualiza un grupo añadiendo un usuario por el ID del grupo.
+- DELETE `/groups/:nombre`: Elimina un grupo específico por su nombre.
 
 #### messages.js
 Endpoints:
 
-GET /messages/users/:username_origen/:username_destino: Obtiene todos los mensajes entre dos usuarios.
-GET /messages/all_chats/:username: Obtiene todos los usuarios con los que se ha tenido una conversación.
-POST /messages/:username_destino: Envia un mensaje a un usuario destino.
+- GET `/messages/users/:username_origen/:username_destino`: Obtiene todos los mensajes entre dos usuarios.
+- GET `/messages/all_chats/:username`: Obtiene todos los usuarios con los que se ha tenido una conversación.
+- POST `/messages/:username_destino`: Envia un mensaje a un usuario destino.
 
 #### users.js
 Endpoints:
 
-GET /users: Obtiene todos los usuarios.
-GET /users/:username: Obtiene un usuario específico por su nombre de usuario.
-GET /users/:username/key: Obtiene la llave pública del usuario en base 64 por su nombre de usuario.
-POST /users: Crea un nuevo usuario.
-PATCH /users/:username: Actualiza la llave pública de un usuario.
-DELETE /users/:username: Elimina un usuario por su nombre de usuario.
-DELETE /users/key/:username: Elimina la llave de un usuario por su nombre de usuario.
+- GET `/users`: Obtiene todos los usuarios.
+- GET `/users/:username`: Obtiene un usuario específico por su nombre de usuario.
+- GET `/users/:username/key`: Obtiene la llave pública del usuario en base 64 por su nombre de usuario.
+- POST `/users`: Crea un nuevo usuario.
+- PATCH `/users/:username`: Actualiza la llave pública de un usuario.
+- DELETE `/users/:username`: Elimina un usuario por su nombre de usuario.
+- DELETE `/users/key/:username`: Elimina la llave de un usuario por su nombre de usuario.
 
 #### keys.js
 Endpoints:
 
-GET /keys/:username: Obtiene la llave privada de un usuario.
-POST /keys: Coloca la llave privada en la tabla keys si el usuario existe.
-GET /keys/key_pair/:username: Obtiene tanto la llave privada como la llave pública de un usuario.
-GET /keys/private_key/:username: Obtiene la llave privada de un usuario.
-GET /keys/public_key/:username: Obtiene la llave pública de un usuario.
+- GET `/keys/:username`: Obtiene la llave privada de un usuario.
+- POST `/keys`: Coloca la llave privada en la tabla keys si el usuario existe.
+- GET `/keys/key_pair/:username`: Obtiene tanto la llave privada como la llave pública de un usuario.
+- GET `/keys/private_key/:username`: Obtiene la llave privada de un usuario.
+- GET `/keys/public_key/:username`: Obtiene la llave pública de un usuario.
 
 Para cada uno de estos endpoints, se espera cierta información en la solicitud (como parámetros en la URL, datos en el cuerpo de la solicitud para POST y PATCH, etc.) y devuelven datos en formato JSON junto con códigos de estado HTTP apropiados que indican el resultado de la solicitud.
 
-# API Endpoints Documentation
+## Endpoints Python Server
 
-## List Collections
+### Collections
+
+#### List Collections
 
 - **Endpoint:** `/list_collections`
 - **Method:** `GET`
 - **Description:** Enumera todas las colecciones disponibles en la base de datos.
 
-## List All Entries in Collection
+#### List All Entries in Collection
 
 - **Endpoint:** `/list_all_entries_in_collection/<collection_name>`
 - **Method:** `GET`
 - **Description:** Lista todas las entradas dentro de una colección específica, indicada por `<collection_name>`.
 
-## Get All Groups
+### Groups
+
+#### Get All Groups
 
 - **Endpoint:** `/groups/get_all_groups/`
 - **Method:** `GET`
 - **Description:** Obtiene todos los grupos disponibles.
 
-## Get All Groups by User
+#### Get All Groups by User
 
 - **Endpoint:** `/groups/get_all_groups_by_user/<username>`
 - **Method:** `GET`
 - **Description:** Recupera todos los grupos asociados a un usuario específico, identificado por `<username>`.
 
-## Create New Group
+#### Create New Group
 
 - **Endpoint:** `/groups/create_new_group/`
 - **Method:** `POST`
 - **Description:** Crea un nuevo grupo con los datos proporcionados en el cuerpo de la petición.
 
-## Get Group by Name
+#### Get Group by Name
 
 - **Endpoint:** `/groups/get_group_by_name/<group_name>`
 - **Method:** `GET`
 - **Description:** Busca y devuelve información sobre un grupo específico, identificado por `<group_name>`.
 
-## Insert Message to Group
+### Group Messages
+
+#### Insert Message to Group
 
 - **Endpoint:** `/groups/insert_message_to_group/`
 - **Method:** `POST`
 - **Description:** Inserta un mensaje en un grupo específico, con los detalles proporcionados en el cuerpo de la petición.
 
-## Get All Messages by Group
+#### Get All Messages by Group
 
 - **Endpoint:** `/groups/get_all_messages_by_group/`
 - **Method:** `POST`
 - **Description:** Recupera todos los mensajes de un grupo específico, identificado en el cuerpo de la petición.
 
-## Delete Group by Name
+#### Delete Group by Name
 
 - **Endpoint:** `/groups/delete_group_by_name/`
 - **Method:** `POST`
 - **Description:** Elimina un grupo específico, identificado en el cuerpo de la petición.
 
-## Update User Private and Public Key
+### Users
+
+#### Update User Private and Public Key
 
 - **Endpoint:** `/users/update_user_private_and_public_key/`
 - **Method:** `PUT`
