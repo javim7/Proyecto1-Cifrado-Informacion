@@ -1,0 +1,6 @@
+projectKey=prueba-sonar
+serverUrl=http://localhost:9001
+serverVersion=9.9.7.96285
+dashboardUrl=http://localhost:9001/dashboard?id=prueba-sonar
+ceTaskId=AZJuuN3GSRQ-Ai6fTNGu
+ceTaskUrl=http://localhost:9001/api/ce/task?id=AZJuuN3GSRQ-Ai6fTNGu
